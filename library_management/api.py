@@ -25,3 +25,20 @@ def get_library_stats():
         "members": total_members,
         "issued": total_issued
     }
+
+
+@frappe.whitelist(allow_guest=True)
+def create_payment_inten(amount, currency="usd", description=None):
+    import stripe
+    stripe.api_key = frappe.conf.get("stripe_secret_key")
+
+    intent = stripe.PaymentIntent.create(
+        amount=int(float(amount)*100),
+        currency=currency,
+        description=description or "Library Payment"
+        automatic_payment_methods={"enabled": True},
+    )
+
+    return {
+        "client_secret": intent.client_secret
+    }
