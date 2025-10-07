@@ -245,3 +245,17 @@ app_license = "mit"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+
+
+test_string = "value"
+test_list = ["value"]
+test_dict = {
+ "key": "value"
+}
+
+
+scheduler_events = {
+    "daily": [
+        "library_management.tasks.check_overdue_books"
+    ]
+}

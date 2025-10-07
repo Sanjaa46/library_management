@@ -1,0 +1,19 @@
+{
+ "content": null,
+ "creation": "2025-10-07 14:37:22.796810",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2025-10-07 14:37:22.796810",
+ "modified_by": "Administrator",
+ "module": "Library Management",
+ "name": "library_dashboard",
+ "owner": "Administrator",
+ "page_name": "library_dashboard",
+ "roles": [],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "Library Dashboard"
+}
