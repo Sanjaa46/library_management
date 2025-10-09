@@ -1,0 +1,19 @@
+{
+ "content": null,
+ "creation": "2025-10-07 18:16:08.686256",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2025-10-07 18:16:08.686256",
+ "modified_by": "Administrator",
+ "module": "Library Management",
+ "name": "library_payment",
+ "owner": "Administrator",
+ "page_name": "library_payment",
+ "roles": [],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "Library Payment"
+}

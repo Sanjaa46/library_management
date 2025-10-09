@@ -10,7 +10,10 @@
   "last_name",
   "full_name",
   "email_address",
-  "phone"
+  "phone",
+  "stripe_customer_id",
+  "stripe_payment_id",
+  "payment_status"
  ],
  "fields": [
   {
@@ -42,12 +45,29 @@
    "fieldname": "phone",
    "fieldtype": "Data",
    "label": "Phone"
+  },
+  {
+   "fieldname": "stripe_customer_id",
+   "fieldtype": "Data",
+   "label": "Stripe Customer Id",
+   "read_only": 1
+  },
+  {
+   "fieldname": "stripe_payment_id",
+   "fieldtype": "Data",
+   "label": "Stripe Payment Id"
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "Pending\nPaid\nFailed"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-03 11:02:21.935323",
+ "modified": "2025-10-09 11:56:44.251082",
  "modified_by": "Administrator",
  "module": "Library Management",
  "name": "Library Member",
