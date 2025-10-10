@@ -99,38 +99,6 @@ def create_checkout_session(membership, fee_id):
 
     return {"sessionId": session.id, "url": session.url}
 
-# @frappe.whitelist(allow_guest=True)
-# def stripe_webhook():
-#     site_config = frappe.get_site_config()
-#     stripe.api_key = site_config.get("stripe_secret_key")
-
-#     payload = frappe.request.get_data(as_text=True)
-#     print(f"Payload: {payload}")
-#     sig_header = frappe.get_request_header("Stripe-Signature")
-#     endpoint_secret = site_config.get("stripe_webhook_secret")
-
-#     try:
-#         event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
-#     except ValueError:
-#         frappe.local.response.http_status_code = 400
-#         return "Invalid payload"
-#     except stripe.error.SignatureVerificationError:
-#         frappe.local.response.http_status_code = 400
-#         return "Invalid signature"
-
-#     if event["type"] == "checkout.session.completed":
-#         session = event["data"]["object"]
-#         stripe_payment_id = session.get("payment_intent")
-#         stripe_customer_id = session.get("customer")
-
-#         member = frappe.get_value("Library Member", {"stripe_customer_id": stripe_customer_id})
-#         if member:
-#             fee = frappe.get_last_doc("Membership Fee", {"member": member, "status": "Draft"})
-#             fee.db_set("status", "Paid")
-#             fee.db_set("stripe_payment_id", stripe_payment_id)
-#             fee.db_set("payment_date", frappe.utils.nowdate())
-
-#     return "Success"
 
 @frappe.whitelist(allow_guest=True)
 def stripe_webhook():
@@ -161,10 +129,11 @@ def stripe_webhook():
             frappe.log_error("Member not found for customer_id: " + stripe_customer_id, "Stripe Webhook")
             return "Member not found"
 
-        membership = frappe.get_value("Library Membership", {"library_member": member})
+        membership_name = frappe.get_value("Library Membership", {"library_member": member})
+        membership = frappe.get_doc("Library Membership", membership_name)
         print(f"Membership: {membership}")
         # Find Membership Fee (latest draft for that member)
-        fee = frappe.get_doc("Membership Fee", {"library_membership": membership, "status": "Draft"})
+        fee = frappe.get_doc("Membership Fee", {"library_membership": membership.name, "status": "Draft"})
         if not fee:
             frappe.log_error("No draft fee found for member: " + member, "Stripe Webhook")
             return "No fee found"
@@ -173,31 +142,11 @@ def stripe_webhook():
         fee.db_set("status", "Paid")
         fee.db_set("stripe_payment_id", stripe_payment_id)
         fee.db_set("payment_date", frappe.utils.nowdate())
-        # fee.status = "Paid"
-        # fee.stripe_payment_id = stripe_payment_id
-        # fee.payment_date = frappe.utils.nowdate()
-        # frappe.db.commit()
+
+        membership.db_set("from_date", frappe.utils.nowdate())
+        membership.db_set("paid", 1)
 
 
     return "Success"
 
 
-@frappe.whitelist()
-def verify_payment(member_id, payment_intent_id):
-    site_config = frappe.get_site_config()
-    stripe.api_key = site_config.get("stripe_secret_key")
-
-    intent = stripe.PaymentIntent.retrieve(payment_intent_id)
-    member = frappe.get_doc("Library Member", member_id)
-
-    if intent.status == "succeeded":
-        member.payment_status = "Paid"
-        member.stripe_payment_id = payment_intent_id
-        member.save(ignore_permissions=True)
-        frappe.db.commit()
-        return {"status": "success"}
-    else:
-        member.payment_status = "Failed"
-        member.save(ignore_permissions=True)
-        frappe.db.commit()
-        return {"status": "failed"}
