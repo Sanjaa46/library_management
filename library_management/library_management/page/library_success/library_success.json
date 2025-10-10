@@ -1,0 +1,19 @@
+{
+ "content": null,
+ "creation": "2025-10-09 14:42:27.370883",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2025-10-09 14:42:27.370883",
+ "modified_by": "Administrator",
+ "module": "Library Management",
+ "name": "library-success",
+ "owner": "Administrator",
+ "page_name": "library-success",
+ "roles": [],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "Payment Success"
+}
