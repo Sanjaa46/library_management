@@ -11,9 +11,6 @@ def check_overdue_books():
     )
 
     for trx in overdue:
-        print(f"Overdue books: {trx["article"]}")
-
-    for trx in overdue:
         frappe.enqueue(
             method="library_management.tasks.send_overdue_email",
             queue="short",
