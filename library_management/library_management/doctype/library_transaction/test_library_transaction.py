@@ -23,14 +23,16 @@ class TestLibraryTransaction(IntegrationTestCase):
             "doctype": "Library Member",
             "first_name": "Test1",
             "last_name": "User1",
-            "email_address": "testuser1@gmail.com"
+            "email_address": "testuser1@gmail.com",
+            "phone": "11111111"
         }).insert()
 
         self.member1_membership = frappe.get_doc({
             "doctype": "Library Membership",
             "library_member": self.member1.name,
+            "full_name": self.member1.full_name,
             "from_date": frappe.utils.add_days(frappe.utils.today(), -1),
-            "to_date": frappe.utils.add_days(frappe.utils.today(), 10),
+            "to_date": frappe.utils.add_days(frappe.utils.today(), 30),
             "paid": 1,
         }).insert()
         self.member1_membership.submit()
@@ -39,7 +41,8 @@ class TestLibraryTransaction(IntegrationTestCase):
                 "doctype": "Library Member",
                 "first_name": "Test2",
                 "last_name": "User2",
-                "email_address": "testuser2@gmail.com"
+                "email_address": "testuser2@gmail.com",
+                "phone": "11111111"
         }).insert()
 
         self.member2_membership = frappe.get_doc({

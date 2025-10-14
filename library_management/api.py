@@ -48,7 +48,6 @@ def create_payment_intent(amount, currency="usd", description=None):
         "client_secret": intent.client_secret
     }
 
-
 @frappe.whitelist()
 def create_membership_payment(member_name):
     site_config = frappe.get_site_config()
@@ -98,7 +97,6 @@ def create_checkout_session(membership, fee_id):
     )
 
     return {"sessionId": session.id, "url": session.url}
-
 
 @frappe.whitelist(allow_guest=True)
 def stripe_webhook():
