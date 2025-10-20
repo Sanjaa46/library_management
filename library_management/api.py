@@ -51,7 +51,7 @@ def book_info(article_name):
     return data
 
 @frappe.whitelist(methods=["GET"], allow_guest=True)
-@require_auth
+# @require_auth
 def search(query=None, page=1, page_size=12):
     # TODO: create advanced search endpoint?
     if not query:
@@ -103,7 +103,27 @@ def change_password(old_password, new_password):
 @require_auth
 def forgot_password():
     # TODO: create forgot password endpoint
-    return
+    pass
+
+@frappe.whitelist(methods=["GET"], allow_guest=True)
+@require_auth
+def my_books():
+    user_mail = frappe.local.user
+    user = frappe.get_value("Library Member", {"email_address": user_mail})
+
+    books = frappe.get_all(
+        "Library Transaction",
+        filters={
+            "type": "Issue",
+            "library_member": user
+        },
+        fields=["article"],
+        pluck='article'
+    )
+
+    return {
+        "books": books
+    } 
 
 
 
