@@ -51,7 +51,7 @@ def book_info(article_name):
     return data
 
 @frappe.whitelist(methods=["GET"], allow_guest=True)
-# @require_auth
+@require_auth
 def search(query=None, page=1, page_size=12):
     # TODO: create advanced search endpoint?
     if not query:
@@ -100,10 +100,76 @@ def change_password(old_password, new_password):
     return {"Success": True, "message": "Password updated successfully!"}
 
 @frappe.whitelist(allow_guest=True)
-@require_auth
-def forgot_password():
-    # TODO: create forgot password endpoint
-    pass
+def forgot_password(email):
+    if not frappe.db.exists("User", email, cache=True):
+        frappe.throw("User not found!")
+    else:
+        print("Exist")
+
+    if not frappe.db.exists("Library Member", {"email_address": email}):
+        frappe.throw("User is not Library member!")
+
+    
+    recipient_name = frappe.get_all(
+        "Library Member",
+        filters={"email_address": email},
+        fields={"full_name"},
+        pluck="full_name"
+    )
+
+    new_reset_token = frappe.generate_hash()
+
+    user = frappe.get_doc("User", email)
+    user.last_reset_password_key_generated_on = frappe.utils.now_datetime()
+    user.reset_password_key = new_reset_token
+    user.save(ignore_permissions=True)
+    frappe.db.commit()
+    
+    subject = "PASSWORD RESET LINK"
+    frappe.sendmail(
+        # recipients=email,
+        recipients="sanjaas880@gmail.com", #temporary email
+        subject=subject,
+        template='reset_password_email',
+        args=dict(
+            company_logo="http://library.localhost:8000/files/logo.png",
+            company_name="LMS Library",
+            user_name=recipient_name[0],
+            reset_url=f"http://frontend-url:3000/reset-password?token={new_reset_token}",
+            expiration_time=1,
+            current_year=frappe.utils.getdate().year,
+            contact_email="temphomes880@gmail.com",
+            website_url="http://library.localhost:8000",
+        )
+    )
+
+    return {"Success": True, "message": "Password reset link sent!"}
+
+@frappe.whitelist(methods=["POST"], allow_guest=True)
+def reset_password(token, new_password):
+    if not frappe.db.exists("User", {"reset_password_key": token}):
+        frappe.throw("Invalid link!")
+
+    user_email = frappe.get_all(
+        "User",
+        filters={"reset_password_key": token},
+        pluck="name"
+    )[0]
+
+    user = frappe.get_doc("User", user_email)
+
+    now = frappe.utils.now_datetime()
+    time_diff = now - user.last_reset_password_key_generated_on
+    if not time_diff.total_seconds() < 3600:
+        frappe.throw("Reset link expired!")
+
+    user.reset_password_key = None
+    user.save(ignore_permissions=True)
+    frappe.db.commit()
+
+    frappe.utils.password.update_password(user_email[0], new_password)
+
+    return {"Success": True, "message": "Password reseted succesfully!"}
 
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 @require_auth
@@ -258,7 +324,3 @@ def stripe_webhook():
 
 
     return "Success"
-
-
-
-
