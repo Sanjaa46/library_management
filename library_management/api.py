@@ -1,19 +1,111 @@
+import frappe.utils
+import frappe.utils.password
 import stripe
 import frappe
 from frappe import _
+from .auth import require_auth
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
+@require_auth
 def get_books(status=None):
-
-    # Difference between local.user and session.user
-
     filters = {}
     if status:
         filters["status"] = status
 
-    user = frappe.session.user
-    data = frappe.get_all("Article", fields=["article_name", "author", "status"], filters=filters)
+    user = frappe.local.user
+    data = frappe.get_last_doc("Article", fields=["article_name", "author", "status"], filters=filters)
     return {"requested by: ": user, "data": data}
+
+@frappe.whitelist(allow_guest=True)
+@require_auth
+def profile():
+    user_email = frappe.local.user
+    print(user_email)
+
+    user = frappe.get_all("Library Member", filters={"email_address": user_email}, fields={"first_name", "last_name", "phone", "email_address"})
+    print(user)
+
+    data = {
+        "first_name": user[0].first_name,
+        "last_name": user[0].last_name,
+        "phone": user[0].phone,
+        "email": user[0].email_address
+    }
+
+    return data
+
+@frappe.whitelist(allow_guest=True)
+@require_auth
+def book_info(article_name):
+    book = frappe.get_doc("Article", article_name)
+
+    data = {
+        "article_name": book.article_name,
+        "author": book.author,
+        "description": book.description,
+        "isbn": book.isbn,
+        "status": book.status,
+        "image": book.image
+    }
+
+    return data
+
+@frappe.whitelist(methods=["GET"], allow_guest=True)
+@require_auth
+def search(query=None, page=1, page_size=12):
+    # TODO: create advanced search endpoint?
+    if not query:
+        return {"result": 0, "total": 0, "page": page, "page_size": page_size}
+    
+    # convert page parameters to int
+    page = int(page)
+    page_size = int(page_size)
+    offset = (page - 1) * page_size
+
+    # Search Articles where title matches query
+    results = frappe.db.get_all(
+        "Article",
+        filters={"article_name": ["like", f"%{query}%"]},
+        limit_start=offset,
+        limit_page_length=page_size
+    )
+    
+
+    # Count total matches
+    total = frappe.db.count("Article", filters=[["article_name", "like", f"%{query}%"]])
+
+    return {
+        "results": results,
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "total_pages": (total + page_size - 1) // page_size
+    }
+
+
+@frappe.whitelist(methods=["POST"], allow_guest=True)
+@require_auth
+def change_password(old_password, new_password):
+    user_email = frappe.local.user
+
+    # change_password method raises an exception not boolean!
+    try:
+        frappe.utils.password.check_password(user_email, old_password)
+    except:
+        frappe.throw("Old password is incorrect", frappe.AuthenticationError)
+    
+    
+    frappe.utils.password.update_password(user_email, new_password)
+
+    return {"Success": True, "message": "Password updated successfully!"}
+
+@frappe.whitelist(allow_guest=True)
+@require_auth
+def forgot_password():
+    # TODO: create forgot password endpoint
+    return
+
+
 
 @frappe.whitelist(allow_guest=False)
 def get_library_stats():
@@ -146,5 +238,7 @@ def stripe_webhook():
 
 
     return "Success"
+
+
 
 

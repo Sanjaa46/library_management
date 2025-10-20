@@ -32,7 +32,7 @@
   },
   {
    "fieldname": "description",
-   "fieldtype": "Text Editor",
+   "fieldtype": "Data",
    "label": "Description"
   },
   {
@@ -83,7 +83,7 @@
  "index_web_pages_for_search": 1,
  "is_published_field": "published",
  "links": [],
- "modified": "2025-10-06 12:55:24.707872",
+ "modified": "2025-10-16 12:03:01.097528",
  "modified_by": "Administrator",
  "module": "Library Management",
  "name": "Article",
