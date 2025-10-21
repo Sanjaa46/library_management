@@ -5,6 +5,18 @@ import frappe
 from frappe import _
 from .auth import require_auth
 
+@frappe.whitelist(allow_guest=False)
+def get_library_stats():
+    total_books = frappe.db.count("Article")
+    total_members = frappe.db.count("Library Member")
+    total_issued = frappe.db.count("Library Transaction", {"type": "Issue"})
+
+    return {
+        "books": total_books,
+        "members": total_members,
+        "issued": total_issued
+    }
+
 @frappe.whitelist(allow_guest=True)
 @require_auth
 def get_books(status=None):
@@ -12,48 +24,12 @@ def get_books(status=None):
     if status:
         filters["status"] = status
 
-    user = frappe.local.user
-    data = frappe.get_last_doc("Article", fields=["article_name", "author", "status"], filters=filters)
-    return {"requested by: ": user, "data": data}
-
-@frappe.whitelist(allow_guest=True)
-@require_auth
-def profile():
-    user_email = frappe.local.user
-    print(user_email)
-
-    user = frappe.get_all("Library Member", filters={"email_address": user_email}, fields={"first_name", "last_name", "phone", "email_address"})
-    print(user)
-
-    data = {
-        "first_name": user[0].first_name,
-        "last_name": user[0].last_name,
-        "phone": user[0].phone,
-        "email": user[0].email_address
-    }
-
-    return data
-
-@frappe.whitelist(allow_guest=True)
-@require_auth
-def book_info(article_name):
-    book = frappe.get_doc("Article", article_name)
-
-    data = {
-        "article_name": book.article_name,
-        "author": book.author,
-        "description": book.description,
-        "isbn": book.isbn,
-        "status": book.status,
-        "image": book.image
-    }
-
-    return data
+    data = frappe.get_all("Article", fields=["article_name", "author", "status", "image"], filters=filters)
+    return {"data": data}
 
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 @require_auth
 def search(query=None, page=1, page_size=12):
-    # TODO: create advanced search endpoint?
     if not query:
         return {"result": 0, "total": 0, "page": page, "page_size": page_size}
     
@@ -82,6 +58,68 @@ def search(query=None, page=1, page_size=12):
         "total_pages": (total + page_size - 1) // page_size
     }
 
+@frappe.whitelist(methods=["GET"], allow_guest=True)
+@require_auth
+def book_info(article_name=None):
+    print(article_name)
+    if not article_name:
+        frappe.throw("Enter book name!")
+
+    book = frappe.get_doc("Article", article_name)
+    
+    if not book:
+        frappe.throw("Book not found!")
+
+    data = {
+        "article_name": book.article_name,
+        "author": book.author,
+        "description": book.description,
+        "isbn": book.isbn,
+        "status": book.status,
+        "image": book.image
+    }
+
+    return data
+
+@frappe.whitelist(methods=["GET"], allow_guest=True)
+@require_auth
+def my_books():
+    user_mail = frappe.local.user
+    user = frappe.get_value("Library Member", {"email_address": user_mail})
+
+    books = frappe.get_all(
+        "Library Transaction",
+        filters={
+            "type": "Issue",
+            "library_member": user
+        },
+        fields=["article"],
+        pluck='article'
+    )
+
+    return {
+        "books": books
+    } 
+
+
+
+@frappe.whitelist(allow_guest=True)
+@require_auth
+def profile():
+    user_email = frappe.local.user
+    print(user_email)
+
+    user = frappe.get_all("Library Member", filters={"email_address": user_email}, fields={"first_name", "last_name", "phone", "email_address"})
+    print(user)
+
+    data = {
+        "first_name": user[0].first_name,
+        "last_name": user[0].last_name,
+        "phone": user[0].phone,
+        "email": user[0].email_address
+    }
+
+    return data
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 @require_auth
@@ -99,12 +137,13 @@ def change_password(old_password, new_password):
 
     return {"Success": True, "message": "Password updated successfully!"}
 
-@frappe.whitelist(allow_guest=True)
-def forgot_password(email):
+@frappe.whitelist(methods=['POST'], allow_guest=True)
+def forgot_password(email=None):
+    if not email:
+        frappe.throw("Email is required!")
+
     if not frappe.db.exists("User", email, cache=True):
         frappe.throw("User not found!")
-    else:
-        print("Exist")
 
     if not frappe.db.exists("Library Member", {"email_address": email}):
         frappe.throw("User is not Library member!")
@@ -165,89 +204,11 @@ def reset_password(token, new_password):
 
     user.reset_password_key = None
     user.save(ignore_permissions=True)
+
+    frappe.utils.password.update_password(user_email, new_password)
     frappe.db.commit()
 
-    frappe.utils.password.update_password(user_email[0], new_password)
-
     return {"Success": True, "message": "Password reseted succesfully!"}
-
-@frappe.whitelist(methods=["GET"], allow_guest=True)
-@require_auth
-def my_books():
-    user_mail = frappe.local.user
-    user = frappe.get_value("Library Member", {"email_address": user_mail})
-
-    books = frappe.get_all(
-        "Library Transaction",
-        filters={
-            "type": "Issue",
-            "library_member": user
-        },
-        fields=["article"],
-        pluck='article'
-    )
-
-    return {
-        "books": books
-    } 
-
-
-
-@frappe.whitelist(allow_guest=False)
-def get_library_stats():
-    total_books = frappe.db.count("Article")
-    total_members = frappe.db.count("Library Member")
-    total_issued = frappe.db.count("Library Transaction", {"type": "Issue"})
-
-    return {
-        "books": total_books,
-        "members": total_members,
-        "issued": total_issued
-    }
-
-@frappe.whitelist(allow_guest=True)
-def get_stripe_publishable_key():
-    site_config = frappe.get_site_config()
-    return {"publishable_key": site_config.get("stripe_publishable_key")}
-
-@frappe.whitelist(allow_guest=True)
-def create_payment_intent(amount, currency="usd", description=None):
-    import stripe
-    stripe.api_key = frappe.conf.get("stripe_secret_key")
-
-    intent = stripe.PaymentIntent.create(
-        amount=int(float(amount)*100),
-        currency=currency,
-        description=description or "Library Payment",
-        automatic_payment_methods={"enabled": True},
-    )
-
-    return {
-        "client_secret": intent.client_secret
-    }
-
-@frappe.whitelist()
-def create_membership_payment(member_name):
-    site_config = frappe.get_site_config()
-    stripe.api_key = site_config.get("stripe_secret_key")
-    membership_fee = frappe.db.get_single_value("Library Settings", "membership_fee")
-
-    member = frappe.get_doc("Library Member", member_name)
-    if not member.stripe_customer_id:
-        frappe.throw("Stripe customer not found for this member.")
-
-    intent = stripe.PaymentIntent.create(
-        amount=int(membership_fee*100),
-        currency="usd",
-        customer=member.stripe_customer_id,
-        metadata={"member_id": member_name},
-        description=f"Membership fee for {member.full_name}",
-    )
-
-    return {
-        "client_secret": intent.client_secret,
-        "payment_intent_id": intent.id
-    }
 
 @frappe.whitelist()
 def create_checkout_session(membership, fee_id):
@@ -284,6 +245,7 @@ def stripe_webhook():
     payload = frappe.request.get_data(as_text=True)
     sig_header = frappe.get_request_header("Stripe-Signature")
     endpoint_secret = site_config.get("stripe_webhook_secret")
+    print(endpoint_secret)
 
     try:
         event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
@@ -324,3 +286,45 @@ def stripe_webhook():
 
 
     return "Success"
+
+
+
+
+@frappe.whitelist()
+def create_membership_payment(member_name):
+    site_config = frappe.get_site_config()
+    stripe.api_key = site_config.get("stripe_secret_key")
+    membership_fee = frappe.db.get_single_value("Library Settings", "membership_fee")
+
+    member = frappe.get_doc("Library Member", member_name)
+    if not member.stripe_customer_id:
+        frappe.throw("Stripe customer not found for this member.")
+
+    intent = stripe.PaymentIntent.create(
+        amount=int(membership_fee*100),
+        currency="usd",
+        customer=member.stripe_customer_id,
+        metadata={"member_id": member_name},
+        description=f"Membership fee for {member.full_name}",
+    )
+
+    return {
+        "client_secret": intent.client_secret,
+        "payment_intent_id": intent.id
+    }
+
+@frappe.whitelist(allow_guest=True)
+def create_payment_intent(amount, currency="usd", description=None):
+    import stripe
+    stripe.api_key = frappe.conf.get("stripe_secret_key")
+
+    intent = stripe.PaymentIntent.create(
+        amount=int(float(amount)*100),
+        currency=currency,
+        description=description or "Library Payment",
+        automatic_payment_methods={"enabled": True},
+    )
+
+    return {
+        "client_secret": intent.client_secret
+    }
