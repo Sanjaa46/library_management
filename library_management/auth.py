@@ -24,7 +24,7 @@ def signup_user(first_name, last_name, email, phone, password):
         "last_name": last_name,
         "enabled": 1,
         "new_password": password,
-        "roles": [{"role": "Library Member"}]
+        "role_profile_name": "Library Member"
     })
     user.insert(ignore_permissions=True)
 

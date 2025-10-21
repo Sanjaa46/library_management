@@ -1,5 +1,3 @@
-import frappe.utils
-import frappe.utils.password
 import stripe
 import frappe
 from frappe import _
@@ -109,14 +107,15 @@ def profile():
     user_email = frappe.local.user
     print(user_email)
 
-    user = frappe.get_all("Library Member", filters={"email_address": user_email}, fields={"first_name", "last_name", "phone", "email_address"})
+    user = frappe.get_all("Library Member", filters={"email_address": user_email}, fields={"name", "first_name", "last_name", "phone", "email_address"})[0]
     print(user)
 
     data = {
-        "first_name": user[0].first_name,
-        "last_name": user[0].last_name,
-        "phone": user[0].phone,
-        "email": user[0].email_address
+        "id": user.name,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "phone": user.phone,
+        "email": user.email_address
     }
 
     return data
@@ -212,16 +211,24 @@ def reset_password(token, new_password):
 
 
 @frappe.whitelist(methods=['GET'], allow_guest=True)
-def create_checkout_session(membership=None, fee_id=None):
-    if not membership and not fee_id:
-        frappe.throw("Membership ID or membership fee ID is missing")
-
+@require_auth
+def create_checkout_session(member_id=None):
     site_config = frappe.get_site_config()
     stripe.api_key = site_config.get("stripe_secret_key")
 
-    member_name = frappe.get_value("Library Membership", membership, 'library_member')
+    membership = frappe.get_last_doc(
+        "Library Membership",
+        filters={"library_member": member_id}
+    )
+
+    fee_id = frappe.get_last_doc(
+        "Membership Fee",
+        filters={"library_membership": membership.name}
+    )
+    
+    member_name = frappe.get_value("Library Membership", membership.name, 'library_member')
     member = frappe.get_doc("Library Member", member_name)
-    fee = frappe.get_doc("Membership Fee", fee_id)
+    fee = frappe.get_doc("Membership Fee", fee_id.name)
 
     session = stripe.checkout.Session.create(
         customer=member.stripe_customer_id,
@@ -242,6 +249,7 @@ def create_checkout_session(membership=None, fee_id=None):
     return {"sessionId": session.id, "url": session.url}
 
 @frappe.whitelist(allow_guest=True)
+@require_auth
 def stripe_webhook():
     site_config = frappe.get_site_config()
     stripe.api_key = site_config.get("stripe_secret_key")

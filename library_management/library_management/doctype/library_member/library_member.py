@@ -38,28 +38,6 @@ class LibraryMember(Document):
 			frappe.logger().info(f"Stripe customer created with ID: {customer.id}")
 		except Exception as e:
 			frappe.log_error(f"Stripe error: {str(e)}", "Stripe Customer Creation Error")
-		
-		""" Create new Library Membership and Membership Fee when new library member is created """
-
-		frappe.set_user("Administrator")
-
-		new_membership = frappe.get_doc({
-			"doctype": "Library Membership",
-			"library_member": self.name,
-			"full_name": self.full_name,
-			"paid": 0
-		})
-		new_membership.insert(ignore_permissions=True)
-
-		new_membership_fee = frappe.get_doc({
-			"doctype": "Membership Fee",
-			"library_membership": new_membership.name,
-			"amount": 10,
-			"status": "Draft"
-		})
-		new_membership_fee.insert(ignore_permissions=True)
-
-		frappe.set_user("Guest")
 
 	def after_delete(self):
 		""" Delete library member from User table when member is deleted """

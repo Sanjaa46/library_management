@@ -65,8 +65,9 @@
    "label": "Route"
   },
   {
+   "default": "0",
    "fieldname": "published",
-   "fieldtype": "Data",
+   "fieldtype": "Check",
    "label": "Published"
   },
   {
@@ -83,7 +84,7 @@
  "index_web_pages_for_search": 1,
  "is_published_field": "published",
  "links": [],
- "modified": "2025-10-16 12:03:01.097528",
+ "modified": "2025-10-21 12:45:28.200856",
  "modified_by": "Administrator",
  "module": "Library Management",
  "name": "Article",
