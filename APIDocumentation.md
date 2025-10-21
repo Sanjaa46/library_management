@@ -405,7 +405,7 @@ Base URL: `/api/method`
 
 
 ## Нууц үг сэргээх
-### Endpoint: ` /library_management.api.reset_password`
+### Endpoint: `POST /library_management.api.reset_password`
 #### Хэрэглэгч нууц үг сэргээх токеноор таньж хэрэглэгчийн нууц үгийг солино.
 
 ### Хүсэлтийн параметрүүд:
@@ -437,5 +437,36 @@ Base URL: `/api/method`
 {
   "exc_type": "ValidationError",
   "_server_messages": "[\"{\\\"message\\\":\\\"Invalid link!\\\",...]"
+}
+```
+
+
+
+## Гишүүнчлэл төлбөр төлөх холбоос авах
+### Endpoint: `GET /library_management.api.create_checkout_session`
+#### Нэвтэрсэн хэрэглэгчид гишүүнчлэлийн төлбөр төлөх холбоос үүсгэж өгнө. Хэрэглэгчийн "membership ID" болон "membership fee ID" нь хэрэглэгч шинээр үүсгэх үед үүснэ
+
+### Хүсэлтийн параметрүүд:
+
+| Parameter     | Type   | Required | Description               |
+| ------------- | ------ | -------- | ------------------------- |
+| membership    | string | Yes      | User's membership ID      |
+| fee_id        | string | Yes      | User's membership fee ID  |
+
+### Хүсэлтийн жишээ:
+```json
+{
+  "membership": "LMS0001",
+  "fee_id": "MSF0001"
+}
+```
+### Хариу:
+Амжилттай (200 Ok):
+```json
+{
+  "message": {
+    "sessionId": "cs_test_a18C...",
+    "url": "https://checkout.stripe.com/c/pay/cs_test_a18C...#..."
+  }
 }
 ```

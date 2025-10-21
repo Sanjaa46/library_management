@@ -210,8 +210,12 @@ def reset_password(token, new_password):
 
     return {"Success": True, "message": "Password reseted succesfully!"}
 
-@frappe.whitelist()
-def create_checkout_session(membership, fee_id):
+
+@frappe.whitelist(methods=['GET'], allow_guest=True)
+def create_checkout_session(membership=None, fee_id=None):
+    if not membership and not fee_id:
+        frappe.throw("Membership ID or membership fee ID is missing")
+
     site_config = frappe.get_site_config()
     stripe.api_key = site_config.get("stripe_secret_key")
 
@@ -286,45 +290,3 @@ def stripe_webhook():
 
 
     return "Success"
-
-
-
-
-@frappe.whitelist()
-def create_membership_payment(member_name):
-    site_config = frappe.get_site_config()
-    stripe.api_key = site_config.get("stripe_secret_key")
-    membership_fee = frappe.db.get_single_value("Library Settings", "membership_fee")
-
-    member = frappe.get_doc("Library Member", member_name)
-    if not member.stripe_customer_id:
-        frappe.throw("Stripe customer not found for this member.")
-
-    intent = stripe.PaymentIntent.create(
-        amount=int(membership_fee*100),
-        currency="usd",
-        customer=member.stripe_customer_id,
-        metadata={"member_id": member_name},
-        description=f"Membership fee for {member.full_name}",
-    )
-
-    return {
-        "client_secret": intent.client_secret,
-        "payment_intent_id": intent.id
-    }
-
-@frappe.whitelist(allow_guest=True)
-def create_payment_intent(amount, currency="usd", description=None):
-    import stripe
-    stripe.api_key = frappe.conf.get("stripe_secret_key")
-
-    intent = stripe.PaymentIntent.create(
-        amount=int(float(amount)*100),
-        currency=currency,
-        description=description or "Library Payment",
-        automatic_payment_methods={"enabled": True},
-    )
-
-    return {
-        "client_secret": intent.client_secret
-    }

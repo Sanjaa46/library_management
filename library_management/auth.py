@@ -15,7 +15,7 @@ def _hash_token(token):
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 def signup_user(first_name, last_name, email, phone, password):
     if frappe.db.exists("User", email):
-        return {"error": "Usser already exists"}
+        return {"error": "User already exists"}
     
     user = frappe.get_doc({
         "doctype": "User",
