@@ -14,19 +14,3 @@ class LibraryMembership(Document):
 
 	def on_update(self):
 		self.submit()
-
-	def after_insert(self):
-		new_membership_fee = frappe.get_doc({
-			"doctype": "Membership Fee",
-			"library_membership": self.name,
-			"amount": 10,
-			"status": "Draft"
-		})
-		print(new_membership_fee)
-
-		if frappe.get_user() != "Administrator":
-			frappe.set_user("Administrator")
-			new_membership_fee.insert(ignore_permissions=True)
-			frappe.set_user("Guest")
-		
-		new_membership_fee.insert()

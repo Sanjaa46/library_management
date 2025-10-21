@@ -53,7 +53,7 @@ class LibraryTransaction(Document):
             {
                 "library_member": self.library_member,
                 "docstatus": DocStatus.submitted(),
-                "from_date": ("<", self.date),
+                "from_date": ("=<", self.date),
                 "to_date": (">", self.date),
             },
         )

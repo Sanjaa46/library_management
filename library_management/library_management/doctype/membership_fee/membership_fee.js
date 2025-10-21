@@ -1,3 +1,4 @@
+/*
 frappe.ui.form.on("Membership Fee", {
     refresh(frm) {
         if (frm.doc.status === "Draft") {
@@ -18,3 +19,4 @@ frappe.ui.form.on("Membership Fee", {
         }
     },
 });
+*/

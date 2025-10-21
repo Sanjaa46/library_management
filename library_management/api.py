@@ -59,7 +59,6 @@ def search(query=None, page=1, page_size=12):
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 @require_auth
 def book_info(article_name=None):
-    print(article_name)
     if not article_name:
         frappe.throw("Enter book name!")
 
@@ -82,8 +81,8 @@ def book_info(article_name=None):
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 @require_auth
 def my_books():
-    user_mail = frappe.local.user
-    user = frappe.get_value("Library Member", {"email_address": user_mail})
+    user_email = frappe.local.user
+    user = frappe.get_value("Library Member", {"email_address": user_email})
 
     books = frappe.get_all(
         "Library Transaction",
@@ -212,23 +211,52 @@ def reset_password(token, new_password):
 
 @frappe.whitelist(methods=['GET'], allow_guest=True)
 @require_auth
-def create_checkout_session(member_id=None):
+def create_checkout_session():
     site_config = frappe.get_site_config()
     stripe.api_key = site_config.get("stripe_secret_key")
 
-    membership = frappe.get_last_doc(
-        "Library Membership",
-        filters={"library_member": member_id}
-    )
-
-    fee_id = frappe.get_last_doc(
-        "Membership Fee",
-        filters={"library_membership": membership.name}
-    )
+    user_email = frappe.local.user
     
-    member_name = frappe.get_value("Library Membership", membership.name, 'library_member')
-    member = frappe.get_doc("Library Member", member_name)
-    fee = frappe.get_doc("Membership Fee", fee_id.name)
+
+    try:
+        members = frappe.get_all(
+            "Library Member",
+            filters={"email_address": user_email},
+            fields=['name', 'full_name', 'stripe_customer_id']
+        )
+
+        member = members[0]
+
+        if not member:
+            frappe.throw("No Library member found with your email!")
+
+        amount = frappe.get_single_value("Library Settings", "membership_fee")
+
+        if not amount:
+            frappe.throw("Membership fee is not set in Library settings!")
+
+        membership = frappe.get_doc({
+            "doctype": "Library Membership",
+            "library_member": member.name,
+            "full_name": member.full_name,
+        })
+        membership.insert(ignore_permissions=True)
+
+        fee = frappe.get_doc({
+            "doctype": "Membership Fee",
+            "library_membership": membership.name,
+            "amount": amount,
+            "status": "Draft"
+        })
+        fee.insert(ignore_permissions=True)
+
+        frappe.db.commit()
+    except Exception as e:
+        frappe.db.rollback()
+        frappe.log_error(f"Error creating membership: {str(e)}")
+        frappe.throw("Failed to create membership. Please try again.")
+
+    print("customer id: ", member.stripe_customer_id)
 
     session = stripe.checkout.Session.create(
         customer=member.stripe_customer_id,
@@ -249,7 +277,6 @@ def create_checkout_session(member_id=None):
     return {"sessionId": session.id, "url": session.url}
 
 @frappe.whitelist(allow_guest=True)
-@require_auth
 def stripe_webhook():
     site_config = frappe.get_site_config()
     stripe.api_key = site_config.get("stripe_secret_key")
@@ -270,11 +297,11 @@ def stripe_webhook():
         session = event["data"]["object"]
 
         stripe_payment_id = session.get("payment_intent")
+        frappe.log_error("Stripe payment id: ", stripe_payment_id)
         stripe_customer_id = session.get("customer")
 
         # Find member by Stripe customer ID
-        member = frappe.get_value("Library Member", {"stripe_customer_id": stripe_customer_id}) # Bat
-        print("type of member", type(member))
+        member = frappe.get_value("Library Member", {"stripe_customer_id": stripe_customer_id})
         if not member:
             frappe.log_error("Member not found for customer_id: " + stripe_customer_id, "Stripe Webhook")
             return "Member not found"
@@ -294,7 +321,6 @@ def stripe_webhook():
         fee.db_set("payment_date", frappe.utils.nowdate())
 
         membership.db_set("from_date", frappe.utils.nowdate())
-        membership.db_set("paid", 1)
 
 
     return "Success"
