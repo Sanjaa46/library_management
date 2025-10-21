@@ -316,7 +316,7 @@ Base URL: `/api/method`
 
 
 ## Нууц үгээ солих
-### Endpoint: ` /library_management.api.change_password`
+### Endpoint: `POST /library_management.api.change_password`
 #### Нэвтэрсэн хэрэглэгч өөрийн хуучин нууц үгийг солих
 
 ### Authentication:
@@ -361,7 +361,7 @@ Base URL: `/api/method`
 
 
 ## Нууц үг мартсан
-### Endpoint: ` /library_management.api.forgot_password`
+### Endpoint: `POST /library_management.api.forgot_password`
 #### Хэрэглэгч нууц үгээ мартсан тохиолдолд бүртгэл үүсгэхдээ ашигласан имейл хаягруу нууц үг сэргээх холбоосыг явуулна. Энэхүү холбоосд нууц үг сэргээх токенийг агуулна. Токен нь нэг цагийн хүчинтэй.
 
 ### Хүсэлтийн параметрүүд:
