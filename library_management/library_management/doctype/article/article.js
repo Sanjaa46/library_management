@@ -1,4 +1,3 @@
-// lib TODO: Add issue button for library members
 frappe.ui.form.on("Article", {
 	refresh(frm) {
         if (frm.doc.status === "Available") {

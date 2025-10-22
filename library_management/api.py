@@ -266,7 +266,7 @@ def create_checkout_session():
         if not amount:
             frappe.throw("Membership fee is not set in Library settings!")
 
-        # lib TODO: set user to administrator
+        frappe.set_user("Administrator")
         membership = frappe.get_doc({
             "doctype": "Library Membership",
             "library_member": member.name,
@@ -283,6 +283,7 @@ def create_checkout_session():
         fee.insert(ignore_permissions=True)
 
         frappe.db.commit()
+        frappe.set_user("Guest")
     except Exception as e:
         frappe.db.rollback()
         frappe.log_error(f"Error creating membership: {str(e)}")
@@ -353,6 +354,7 @@ def stripe_webhook():
         fee.db_set("payment_date", frappe.utils.nowdate())
 
         membership.db_set("from_date", frappe.utils.nowdate())
+        membership.submit()
 
 
     return "Success"
