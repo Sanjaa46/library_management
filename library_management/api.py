@@ -78,6 +78,37 @@ def book_info(article_name=None):
 
     return data
 
+@frappe.whitelist()
+def issue_book(user_email, book):
+    user = frappe.get_value("Library Member", {"email_address": user_email}, "name")
+
+    transaction = frappe.get_doc({
+        "doctype": "Library Transaction",
+        "article": book,
+        "library_member": user,
+        "type": "Issue",
+        "date": frappe.utils.nowdate()
+    })
+    transaction.insert(ignore_permissions=True)
+
+    return {"Seccess": True, "url": "http://library.localhost:8000/articles/rich-and-poor"}
+
+@frappe.whitelist()
+def has_active_issue(user_email, book):
+    user = frappe.get_value("Library Member", {"email_address": user_email})
+
+    exists = frappe.db.exists(
+        "Library Transaction",
+        {
+            "article": book,
+            "library_member": user,
+            "type": "Issue",
+            "docstatus": 0
+        }
+    )
+
+    return bool(exists)
+
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 @require_auth
 def my_books():
@@ -235,6 +266,7 @@ def create_checkout_session():
         if not amount:
             frappe.throw("Membership fee is not set in Library settings!")
 
+        # lib TODO: set user to administrator
         membership = frappe.get_doc({
             "doctype": "Library Membership",
             "library_member": member.name,
