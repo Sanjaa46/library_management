@@ -1,0 +1,11 @@
+{
+ "enable_oauth": true,
+ "rq_failed_jobs_limit": 10,
+ "stripe_publishable_key": "pk_test_...",
+ "stripe_secret_key": "sk_test_...",
+ "stripe_webhook_secret": "whsec_...",
+ "jwt_secret": "<jwt_secret>",
+ "jwt_algorithm": "<jwt_algorithm>",
+ "access_token_expires_seconds": 900,
+ "refresh_token_expires_days": 30
+}

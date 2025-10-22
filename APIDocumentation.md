@@ -19,13 +19,11 @@
 
 ## Номын сангийн удирдлагын системийн API-г хэрхэн ашиглах
 
-Base URL: `/api/method`
-
 Бүх endpoint-ууд хүсэлт болон хариуг JSON хэлбэрээр авна.
 
 ## Хэрэглэгч шинээр бүртгүүлэх
 
-### Endpoint: `POST /library_management.auth.signup_user`
+### Endpoint: `POST /api/method/library_management.auth.signup_user`
 
 #### Шинэ бүртгэл үүсгэхэд Library Member мөн үүснэ.
 
@@ -63,7 +61,7 @@ Base URL: `/api/method`
 
 ## Хэрэглэгч нэвтрэх
 
-### Endpoint: `POST /library_management.auth.login`
+### Endpoint: `POST /api/method/library_management.auth.login`
 
 ##### Хэрэглэгч нэвтрэх үед JWT access болон refresh токен буцаана.
 
@@ -107,7 +105,7 @@ Base URL: `/api/method`
 
 
 ## Access токен шинэчлэх
-### Endpoint: `POST /library_management.auth.refresh`
+### Endpoint: `POST /api/method/library_management.auth.refresh`
 #### Access токений хугацаа дуусахад refresh токеноо ашиглан шинэ access токен авах хүсэлт явуулна.
 
 ### Хүсэлтийн параметрүүд:
@@ -138,7 +136,7 @@ Base URL: `/api/method`
 
 
 ## Номын жагсаалт авах
-### Endpoint: `GET /library_management.api.get_books`
+### Endpoint: `GET /api/method/library_management.api.get_books`
 #### Номын жагсаалтыг төлөвөөр нь шүүж авна.
 
 ### Authentication:
@@ -175,7 +173,7 @@ Base URL: `/api/method`
 
 
 ## Ном нэрээр хайх
-### Endpoint: `GET /library_management.api.search`
+### Endpoint: `GET /api/method/library_management.api.search`
 #### Өгөгдлийн сан дахь номнуудаас нэрээр хайлт хийх
 
 ### Authentication:
@@ -223,7 +221,7 @@ Base URL: `/api/method`
 
 
 ## Тухайн номын мэдээллийг харах
-### Endpoint: `GET /library_management.api.book_info`
+### Endpoint: `GET /api/method/library_management.api.book_info`
 #### Тухайн номын мэдээллийг харах
 
 ### Authentication:
@@ -271,7 +269,7 @@ Base URL: `/api/method`
 
 
 ## Зээлсэн номуудыг харах
-### Endpoint: `GET /library_management.api.my_books`
+### Endpoint: `GET /api/method/library_management.api.my_books`
 #### Нэвтэрсэн хэрэглэгч өөрийн зээлсэн номуудыг харах.
 
 ### Authentication:
@@ -293,7 +291,7 @@ Base URL: `/api/method`
 
 
 ## Нэвтэрсэн хэрэглэгчийн мэдээлэл (profile)
-### Endpoint: ` /library_management.api.profile`
+### Endpoint: ` /api/method/library_management.api.profile`
 #### Нэвтэрсэн хэрэглэгчийн нэр, овог, утас болон имейл гэсэн мэдээллүүдийг явуулна.
 
 ### Authentication:
@@ -316,7 +314,7 @@ Base URL: `/api/method`
 
 
 ## Нууц үгээ солих
-### Endpoint: `POST /library_management.api.change_password`
+### Endpoint: `POST /api/method/library_management.api.change_password`
 #### Нэвтэрсэн хэрэглэгч өөрийн хуучин нууц үгийг солих
 
 ### Authentication:
@@ -361,7 +359,7 @@ Base URL: `/api/method`
 
 
 ## Нууц үг мартсан
-### Endpoint: `POST /library_management.api.forgot_password`
+### Endpoint: `POST /api/method/library_management.api.forgot_password`
 #### Хэрэглэгч нууц үгээ мартсан тохиолдолд бүртгэл үүсгэхдээ ашигласан имейл хаягруу нууц үг сэргээх холбоосыг явуулна. Энэхүү холбоосд нууц үг сэргээх токенийг агуулна. Токен нь нэг цагийн хүчинтэй.
 
 ### Хүсэлтийн параметрүүд:
@@ -405,7 +403,7 @@ Base URL: `/api/method`
 
 
 ## Нууц үг сэргээх
-### Endpoint: `POST /library_management.api.reset_password`
+### Endpoint: `POST /api/method/library_management.api.reset_password`
 #### Хэрэглэгч нууц үг сэргээх токеноор таньж хэрэглэгчийн нууц үгийг солино.
 
 ### Хүсэлтийн параметрүүд:
@@ -443,7 +441,7 @@ Base URL: `/api/method`
 
 
 ## Гишүүнчлэл төлбөр төлөх холбоос авах
-### Endpoint: `GET /library_management.api.create_checkout_session`
+### Endpoint: `GET /api/method/library_management.api.create_checkout_session`
 #### Нэвтэрсэн хэрэглэгчид гишүүнчлэлийн төлбөр төлөх холбоос үүсгэж өгнө.
 
 ### Хариу:
