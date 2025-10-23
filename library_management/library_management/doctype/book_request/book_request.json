@@ -22,7 +22,8 @@
    "fieldname": "library_member",
    "fieldtype": "Link",
    "label": "Library Member",
-   "options": "Library Member"
+   "options": "Library Member",
+   "read_only": 1
   },
   {
    "fieldname": "status",
@@ -45,7 +46,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-22 13:32:39.434341",
+ "modified": "2025-10-23 16:17:58.789878",
  "modified_by": "Administrator",
  "module": "Library Management",
  "name": "Book Request",
