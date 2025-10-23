@@ -2,11 +2,10 @@ import frappe
 
 def execute(filters=None):
     columns = [
-        {"label": "Member ID", "fieldname": "name", "fieldtype": "Data", "width": 120},
+        {"label": "Member ID", "fieldname": "name", "fieldtype": "Data", "width": 100},
         {"label": "Full Name", "fieldname": "full_name", "fieldtype": "Data", "width": 200},
         {"label": "Email", "fieldname": "email_address", "fieldtype": "Data", "width": 200},
-        {"label": "Membership Start", "fieldname": "from_date", "fieldtype": "Date", "width": 120},
-        {"label": "Membership Expiry", "fieldname": "to_date", "fieldtype": "Date", "width": 120},
+        {"label": "Membership Expiry", "fieldname": "to_date", "fieldtype": "Date", "width": 170},
     ]
 
     data = frappe.db.sql("""
@@ -14,7 +13,6 @@ def execute(filters=None):
             lm.name,
             lm.full_name,
             lm.email_address,
-            last_mem.from_date,
             last_mem.to_date
         FROM `tabLibrary Member` lm
         LEFT JOIN (
