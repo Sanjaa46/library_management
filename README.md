@@ -63,7 +63,6 @@
 
 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -71,7 +70,6 @@ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
 
 [![Frappe Framework](https://img.shields.io/badge/Frappe_Framework-000000?style=for-the-badge&logo=frappe&logoColor=white)](https://frappe.io/framework)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -115,7 +113,6 @@ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
 
 10. `Librarian` болон `Library Member` role-уудыг үүсгэж зөвшөөрлийг тохируулна
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
@@ -146,7 +143,6 @@ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
     1. `Book Request List`>`Add Book Request` зээлэх номоо сонгоно.
 
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- CONTACT -->
@@ -156,7 +152,6 @@ Email: sanjaas880@gmail.com
 
 Project Link: [https://github.com/Sanjaa46/library_management.git](https://github.com/Sanjaa46/library_management.git)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
