@@ -1,20 +1,30 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2025-10-22 11:57:44.336535",
+ "creation": "2025-10-27 10:51:44.285979",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "article",
   "library_member",
   "status",
+  "library_transaction",
   "amended_from"
  ],
  "fields": [
   {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Book Request2",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
    "fieldname": "article",
    "fieldtype": "Link",
-   "ignore_user_permissions": 1,
    "label": "Article",
    "options": "Article"
   },
@@ -22,8 +32,7 @@
    "fieldname": "library_member",
    "fieldtype": "Link",
    "label": "Library Member",
-   "options": "Library Member",
-   "read_only": 1
+   "options": "Library Member"
   },
   {
    "fieldname": "status",
@@ -32,24 +41,20 @@
    "options": "Requested\nApproved\nBorrowed"
   },
   {
-   "fieldname": "amended_from",
+   "fieldname": "library_transaction",
    "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Book Request",
-   "print_hide": 1,
-   "read_only": 1,
-   "search_index": 1
+   "label": "Library Transaction",
+   "options": "Library Transaction"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-23 16:17:58.789878",
+ "modified": "2025-10-27 10:59:59.961477",
  "modified_by": "Administrator",
  "module": "Library Management",
- "name": "Book Request",
+ "name": "Book Request2",
  "owner": "Administrator",
  "permissions": [
   {
@@ -62,9 +67,11 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   },
   {
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -73,6 +80,7 @@
    "read": 1,
    "report": 1,
    "role": "Librarian",
+   "select": 1,
    "share": 1,
    "submit": 1,
    "write": 1
