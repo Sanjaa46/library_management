@@ -38,20 +38,22 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Requested\nApproved\nBorrowed"
+   "options": "Requested\nApproved\nBorrowed",
+   "read_only": 1
   },
   {
    "fieldname": "library_transaction",
    "fieldtype": "Link",
    "label": "Library Transaction",
-   "options": "Library Transaction"
+   "options": "Library Transaction",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-27 10:59:59.961477",
+ "modified": "2025-10-27 11:34:12.899568",
  "modified_by": "Administrator",
  "module": "Library Management",
  "name": "Book Request2",
