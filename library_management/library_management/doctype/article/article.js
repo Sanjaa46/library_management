@@ -31,6 +31,10 @@ frappe.ui.form.on("Article", {
                 }
             });
             
-        }
+        };
+
+        // frm.add_custom_button('Set Quantity', () => {
+        //     frappe.new_doc('Inventory', { article: frm.doc.name });
+        // });
 	},
 });

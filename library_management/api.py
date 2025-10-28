@@ -200,7 +200,8 @@ def forgot_password(email=None):
         subject=subject,
         template='reset_password_email',
         args=dict(
-            company_logo="http://library.localhost:8000/files/logo.png",
+            # company_logo="http://library.localhost:8000/files/logo.png",
+            company_logo="https://cdn-icons-png.flaticon.com/512/9043/9043296.png", # temporary logo
             company_name="LMS Library",
             user_name=recipient_name[0],
             reset_url=f"http://frontend-url:3000/reset-password?token={new_reset_token}",
@@ -210,6 +211,7 @@ def forgot_password(email=None):
             website_url="http://library.localhost:8000",
         )
     )
+    frappe.db.commit()
 
     return {"Success": True, "message": "Password reset link sent!"}
 
@@ -354,7 +356,9 @@ def stripe_webhook():
         fee.db_set("payment_date", frappe.utils.nowdate())
 
         membership.db_set("from_date", frappe.utils.nowdate())
+        frappe.set_user("Administrator")
         membership.submit()
+        frappe.set_user("Guest")
 
 
     return "Success"

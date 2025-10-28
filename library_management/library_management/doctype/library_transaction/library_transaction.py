@@ -24,22 +24,43 @@ class LibraryTransaction(Document):
         self.validate_membership()
         article = frappe.get_doc("Article", self.article)
         # article cannot be issued if it is already issued
+        try:
+            last_transaction = frappe.get_last_doc(
+                "Library Transaction",
+                filters={
+                    "article": self.article,
+                    "docstatus": 1,
+                    "library_member": self.library_member
+                },
+                order_by="date desc"
+            )
+        except:
+            last_transaction = None
         if article.status == "Issued":
             frappe.throw("Article is already issued by another member")
+        if last_transaction:
+            if article.status == "Available" and last_transaction.type == "Issue":
+                frappe.throw("Member already Issued this book")
 
     def validate_return(self):
         # article cannot be returned if it is not issued first
-        last_transaction = frappe.get_last_doc(
-            "Library Transaction",
-            filters={
-                "article": self.article,
-                "docstatus": 1,
-                "library_member": self.library_member
-            },
-            order_by="date desc"
-        )
-        if not last_transaction or last_transaction.type == "Return":
+        try:
+            last_transaction = frappe.get_last_doc(
+                "Library Transaction",
+                filters={
+                    "article": self.article,
+                    "docstatus": 1,
+                    "library_member": self.library_member
+                },
+                order_by="date desc"
+            )
+        except:
+            last_transaction = None
+        if not last_transaction:
             frappe.throw("Article cannot be returned without being issued first")
+        elif last_transaction.type == "Return":
+            frappe.throw("Article cannot be returned without being issued first")
+    
 
     def validate_maximum_limit(self):
         max_articles = frappe.db.get_single_value("Library Settings", "max_articles")

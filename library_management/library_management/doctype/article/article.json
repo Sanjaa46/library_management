@@ -44,7 +44,8 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Available\nIssued"
+   "options": "Available\nIssued",
+   "read_only": 1
   },
   {
    "fieldname": "publisher",
@@ -84,7 +85,7 @@
  "index_web_pages_for_search": 1,
  "is_published_field": "published",
  "links": [],
- "modified": "2025-10-21 12:45:28.200856",
+ "modified": "2025-10-27 15:09:18.464422",
  "modified_by": "Administrator",
  "module": "Library Management",
  "name": "Article",
