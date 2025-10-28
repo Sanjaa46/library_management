@@ -3,7 +3,7 @@ import frappe
 from frappe import _
 from .auth import require_auth
 
-@frappe.whitelist(allow_guest=False)
+@frappe.whitelist(methods=["GET"], allow_guest=False)
 def get_library_stats():
     total_books = frappe.db.count("Article")
     total_members = frappe.db.count("Library Member")
@@ -15,7 +15,7 @@ def get_library_stats():
         "issued": total_issued
     }
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"], allow_guest=True)
 @require_auth
 def get_books(status=None):
     filters = {}
@@ -129,9 +129,7 @@ def my_books():
         "books": books
     } 
 
-
-
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(methods=["GET"], allow_guest=True)
 @require_auth
 def profile():
     user_email = frappe.local.user
@@ -150,7 +148,7 @@ def profile():
 
     return data
 
-@frappe.whitelist(methods=["POST"], allow_guest=True)
+@frappe.whitelist(methods=["PATCH"], allow_guest=True)
 @require_auth
 def change_password(old_password, new_password):
     user_email = frappe.local.user
@@ -242,7 +240,7 @@ def reset_password(token, new_password):
     return {"Success": True, "message": "Password reseted succesfully!"}
 
 
-@frappe.whitelist(methods=['GET'], allow_guest=True)
+@frappe.whitelist(methods=['POST'], allow_guest=True)
 @require_auth
 def create_checkout_session():
     site_config = frappe.get_site_config()

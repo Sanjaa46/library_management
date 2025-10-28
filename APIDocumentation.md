@@ -294,7 +294,7 @@
 
 
 ## Нэвтэрсэн хэрэглэгчийн мэдээлэл (profile)
-### Endpoint: ` /api/method/library_management.api.profile`
+### Endpoint: `GET /api/method/library_management.api.profile`
 #### Нэвтэрсэн хэрэглэгчийн нэр, овог, утас болон имейл гэсэн мэдээллүүдийг явуулна.
 
 ### Authentication:
@@ -317,7 +317,7 @@
 
 
 ## Нууц үгээ солих
-### Endpoint: `POST /api/method/library_management.api.change_password`
+### Endpoint: `PATCH /api/method/library_management.api.change_password`
 #### Нэвтэрсэн хэрэглэгч өөрийн хуучин нууц үгийг солих
 
 ### Authentication:
@@ -444,7 +444,7 @@
 
 
 ## Гишүүнчлэл төлбөр төлөх холбоос авах
-### Endpoint: `GET /api/method/library_management.api.create_checkout_session`
+### Endpoint: `POST /api/method/library_management.api.create_checkout_session`
 #### Нэвтэрсэн хэрэглэгчид гишүүнчлэлийн төлбөр төлөх холбоос үүсгэж өгнө.
 
 ### Хариу:

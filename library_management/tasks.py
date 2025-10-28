@@ -38,7 +38,7 @@ def send_overdue_email(transaction):
 
     frappe.sendmail(
         # recipients=member.email_address,
-        recipients="sanjaas880@gmail.com",
+        recipients="sanjaas880@gmail.com", # temporary email
         subject=subject,
         message=message
     )
