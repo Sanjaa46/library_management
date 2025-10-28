@@ -61,8 +61,10 @@
   </a>
 </div>
 
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-
+Энэхүү систем нь энгийн <strong>номын сангийн удирдлагын систем</strong> бөгөөд номын санч болон уншигчдад (Library Member) зориулсан.
+- Номын санч нь ном нэмэх, засах, устгах, зээлдүүлэх, гишүүнчлэл үүсгэх зэргийг хийнэ.
+- Library Member нь номын жагсаалтыг харах, ном зээлдэх хүсэлт үүсгэх боломжтой.
+Мөн системийг хэрэглэгч өөрийн UI орчинд ашиглах боломжтой бөгөөд [API Documentation](https://github.com/Sanjaa46/library_management/blob/main/APIDocumentation.md)-д заасан endpoint-уудыг ашиглан Library Member-т зориулсан функциональ байдлаар холбогдож болно.
 
 
 
