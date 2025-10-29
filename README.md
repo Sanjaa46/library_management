@@ -112,10 +112,12 @@
     bench migrate
     ```
 8. 'Frappe desk'-рүү нэвтрэх `http://<site_name>.localhost:8000/#login`
-9. Set outgoing email in frappe desk `http://<site_name>.localhost:8000/app/email-account`
 
-10. `Librarian` болон `Library Member` role-уудыг үүсгэж зөвшөөрлийг тохируулна
+9. Frappe desk-ээс outgoing email-ийг тохируулах `http://<site_name>.localhost:8000/app/email-account`
 
+10. `Librarian` болон `Library Member` role profile-уудыг үүсгэж зөвшөөрлийг тохируулна
+
+11. `Library Settings`-ийг тохируулна
 
 
 
