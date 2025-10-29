@@ -239,7 +239,6 @@ def reset_password(token, new_password):
 
     return {"Success": True, "message": "Password reseted succesfully!"}
 
-
 @frappe.whitelist(methods=['POST'], allow_guest=True)
 @require_auth
 def create_checkout_session():

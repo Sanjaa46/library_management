@@ -22,9 +22,9 @@ def check_overdue_books():
 
 
 def send_overdue_email(transaction):
-    trx = frappe.get_doc("Library Transaction", transaction["name"])
+    trx = frappe.get_doc("Library Transaction", transaction.name)
     member = frappe.get_doc("Library Member", trx.library_member)
-    book = frappe.get_doc("Article", trx.aritlce)
+    book = frappe.get_doc("Article", trx.article)
     subject = f"Overdue Book Reminder: {book.article_name}"
     message = f"""
     Dear {member.first_name},
@@ -42,3 +42,14 @@ def send_overdue_email(transaction):
         subject=subject,
         message=message
     )
+
+overdue = frappe.get_all(
+        "Library Transaction",
+        filters={
+            "type": "Issue",
+            "date": ["<", frappe.utils.getdate()]
+        },
+        fields=["name", "article", "library_member", "date"]
+    )
+
+send_overdue_email(overdue[0])
