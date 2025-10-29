@@ -165,6 +165,33 @@ docker exec -it <container_name> bench pip install -r apps/library_management/re
 
 3. `localhost:8080` дээр систем маань ажиллаж эхэлнэ.
 
+### Custom Docker Image үүсгэх
+1. `app.json` файл үүсгэх.
+```json
+[
+    {
+        "url": "https://github.com/Sanjaa46/library_management.git",
+        "branch": "main"
+    }
+]
+``` 
+2. json файлаас base64 string үүсгэнэ.
+```sh
+export APPS_JSON_BASE64=$(base64 -w 0 /path/to/apps.json)
+```
+
+3. Custom docker image үүсгэх.
+```sh
+docker build \
+ --build-arg=FRAPPE_PATH=https://github.com/frappe/frappe \
+ --build-arg=FRAPPE_BRANCH=version-15 \
+ --build-arg=PYTHON_VERSION=3.12.3 \
+ --build-arg=NODE_VERSION=24.11.0 \
+ --build-arg=APPS_JSON_BASE64=$APPS_JSON_BASE64 \
+ --tag=frappe-custom-image \
+ --file=images/custom/Containerfile .
+```
+
 
 
 
