@@ -40,6 +40,13 @@
       </ul>
     </li>
     <li>
+        <a href="#deployment">Deployment</a>
+        <ul>
+            <li><a href="#орчин-бэлдэх">Орчин бэлдэх</a></li>
+            <li><a href="#deploy">Deploy</a></li>
+      </ul>
+    </li>
+    <li>
         <a href="#ашиглах">Ашиглах</a>
         <ul>
             <li><a href="#номын-санч">Номын санч</a></li>
@@ -118,6 +125,47 @@
 10. `Librarian` болон `Library Member` role profile-уудыг үүсгэж зөвшөөрлийг тохируулна
 
 11. `Library Settings`-ийг тохируулна
+
+<!-- Deployment -->
+## Deployment
+
+### Орчин бэлдэх
+Deploy хийхэд docker суулгасан байх шаардлагатай
+
+1. Set up Docker's apt repository
+```sh
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+```
+
+2. Install the Docker packages.
+```sh
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+### Deploy
+1. Docker compose эхлүүлэх.
+```sh
+docker compose up -d
+```
+
+2. Create-site service амжилттай ажиллаж дууссаны дараа package-уудаа суулгана.
+```sh
+docker exec -it <container_name> bench pip install -r apps/library_management/requirements.txt
+```
+
+3. `localhost:8080` дээр систем маань ажиллаж эхэлнэ.
+
+
 
 
 
