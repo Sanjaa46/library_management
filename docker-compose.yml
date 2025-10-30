@@ -4,6 +4,8 @@ services:
   backend:
     image: sanjaa/frappe-custom:v0.1
     platform: linux/amd64
+    labels:
+    - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - frappe_network
     deploy:
@@ -21,6 +23,8 @@ services:
   configurator:
     image: sanjaa/frappe-custom:v0.1
     platform: linux/amd64
+    labels:
+    - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - frappe_network
     deploy:
@@ -51,6 +55,8 @@ services:
   create-site:
     image: sanjaa/frappe-custom:v0.1
     platform: linux/amd64
+    labels:
+    - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - frappe_network
     deploy:
@@ -111,6 +117,8 @@ services:
   frontend:
     image: sanjaa/frappe-custom:v0.1
     platform: linux/amd64
+    labels:
+    - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - frappe_network
     depends_on:
@@ -138,6 +146,8 @@ services:
   queue-long:
     image: sanjaa/frappe-custom:v0.1
     platform: linux/amd64
+    labels:
+    - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - frappe_network
     deploy:
@@ -158,6 +168,8 @@ services:
   queue-short:
     image: sanjaa/frappe-custom:v0.1
     platform: linux/amd64
+    labels:
+    - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - frappe_network
     deploy:
@@ -198,6 +210,8 @@ services:
   scheduler:
     image: sanjaa/frappe-custom:v0.1
     platform: linux/amd64
+    labels:
+    - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - frappe_network
     deploy:
@@ -213,6 +227,8 @@ services:
   websocket:
     image: sanjaa/frappe-custom:v0.1
     platform: linux/amd64
+    labels:
+    - "com.centurylinklabs.watchtower.enable=true"
     networks:
       - frappe_network
     deploy:
@@ -234,6 +250,7 @@ services:
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    command: --label-enable
     environment:
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_POLL_INTERVAL=300
