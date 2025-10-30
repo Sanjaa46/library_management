@@ -39,4 +39,4 @@ jobs:
             PYTHON_VERSION=3.12.3
             NODE_VERSION=24.11.0
             APPS_JSON_BASE64=${{ env.APPS_JSON_BASE64 }}
-          file: images/custom/Containerfile
+          file: Containerfile
