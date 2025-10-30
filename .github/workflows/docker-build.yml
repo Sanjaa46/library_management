@@ -32,7 +32,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: yourusername/frappe-custom:latest
+          tags: sanjaa/frappe-custom:v0.1
           build-args: |
             FRAPPE_PATH=https://github.com/frappe/frappe
             FRAPPE_BRANCH=version-15
