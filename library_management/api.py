@@ -15,6 +15,46 @@ def get_library_stats():
         "issued": total_issued
     }
 
+# Temp endpoint delete it
+@frappe.whitelist(allow_guest=True)
+def get_stats():
+    return {
+        "data": [
+            {
+            "full_name": "Michael Scott",
+            "image": "https://pilbox.themuse.com/image.jpg?filter=antialias&h=700&opt=1&pos=top-left&prog=1&q=keep&url=https%3A%2F%2Fcms-assets.themuse.com%2Fmedia%2Flead%2F6637.jpg&w=700"
+            },
+            {
+            "full_name": "Jim Halpert",
+            "image": "https://www.denofgeek.com/wp-content/uploads/2021/10/Jim-The-Office-John-Krasinski.jpg?resize=768%2C432"
+            },
+            {
+            "full_name": "Dwight Schrute",
+            "image": "https://images.squarespace-cdn.com/content/v1/59da5d13cf81e005db71d925/1513171418491-XQGKXDDIZ8JDUWK33RJC/dwight.jpg?format=2500w"
+            },
+            {
+            "full_name": "Pam Beesly",
+            "image": "https://miro.medium.com/v2/resize:fit:1400/format:webp/0*leuxNgIVTVRh7CO_.jpg"
+            },
+            {
+            "full_name": "Angela Martin",
+            "image": "https://static1.srcdn.com/wordpress/wp-content/uploads/2019/04/Angela-Kinsey-as-Angela-Martin-in-The-Office-e1559927685783.jpg?q=50&fit=contain&w=1140&h=&dpr=1.5"
+            },
+            {
+            "full_name": "Kelly Kapoor",
+            "image": "https://images.entertainment.ie/uploads/2019/01/24110225/Kelly-Kapoor.jpg?w=1280&h=768&q=low"
+            },
+            {
+            "full_name": "Stanley Hudson",
+            "image": "https://www.looper.com/img/gallery/whatever-happened-to-stanley-from-the-office/intro-1574100890.jpg"
+            },
+            {
+            "image": "https://www.looper.com/img/gallery/why-toby-flenderson-is-the-least-powerful-character-on-the-office/intro-1685124089.webp",
+            "full_name": "Toby Flenderson"
+            }
+        ]
+    }
+
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 @require_auth
 def get_books(status=None):
