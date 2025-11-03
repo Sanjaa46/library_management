@@ -1,5 +1,5 @@
 <template>
-    <footer class=" flex bg-[#2c3e50] w-full justify-center">
+    <footer class=" flex bg-[#2c3e50] w-full justify-center mt-10">
         <div class="flex justify-between w-[1120px] mx-auto py-8 relative">
             <div class="w-[30%]"> <!-- Logo and description -->
                 <img src="../images/logo.png" class="m-5" alt="footer logo">

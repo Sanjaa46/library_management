@@ -1,0 +1,30 @@
+<template>
+<section class="max-w-[1120px] mx-auto px-4 py-12">
+    <div class="mb-8 text-[24px] font-bold relative">
+        <div class="absolute w-1 h-12 bg-gradient-to-b from-blue-500 to-purple-500 left-0"></div>
+        <h1 class="text-4xl font-bold pl-5">Search Result</h1>
+    </div>
+
+    <!-- 12 Articles Container -->
+    <div class="mx-auto mt-0 mb-[50px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[20px]">
+        <Article v-for="book in books" :key="book.id" :book="book" />
+    </div>
+</section>
+</template>
+
+<script setup>
+import Article from '../assets/components/Article.vue';
+
+const books = [
+  { id: 1, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
+  { id: 2, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
+  { id: 3, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
+  { id: 4, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
+  { id: 5, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
+  { id: 6, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
+  { id: 7, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
+  { id: 8, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
+  { id: 9, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
+  { id: 10, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
+];
+</script>
