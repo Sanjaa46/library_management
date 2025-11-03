@@ -17,7 +17,7 @@
 
             <!-- Buttons -->
             <div class="flex flex-col items-center space-y-3 mt-5">
-                <button class=" w-[215px] h-[35px] mt-5 bg-[#118ab2] text-white-overlay-900 rounded-[10px]">Buy Membership</button>
+                <button class=" w-[215px] h-[35px] mt-5 bg-[#118ab2] hover:bg-[#016475] text-white-overlay-900 rounded-[10px]">Buy Membership</button>
                 <button>
                     Change Password >
                 </button>
@@ -32,7 +32,8 @@
         
         <!-- Info, Chnage Password and My Books -->
         <div class="w-[70%]">
-            <ProfileInfo />
+            <!-- <ProfileInfo /> -->
+             <ChangePassword />
         </div>
 
     </section>
@@ -43,6 +44,7 @@
 import Header from '../assets/components/Header.vue';
 import Footer from '../assets/components/Footer.vue';
 import ProfileInfo from '../assets/components/ProfileInfo.vue';
+import ChangePassword from '../assets/components/ChangePassword.vue';
 
 
 </script>

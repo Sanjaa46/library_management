@@ -1,7 +1,7 @@
 <template>
 
 <div>
-    <h1 class=" ml-[20px] mb-[20px] text-[30px] font-bold">Info</h1>
+    <h1 class=" pl-[20px] pb-[20px] text-[30px] font-bold">Info</h1>
     <ul class=" pl-[20px] space-y-4">
         <li>
             <p class=" text-black-overlay-500">ID</p>
