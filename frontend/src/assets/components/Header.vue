@@ -37,7 +37,9 @@
             </button>
         </div>
         <div>
-            <img src="../images/profile.png" alt="profile icon">
+            <router-link to="/profile">
+                <img src="../images/profile.png" alt="profile icon">
+            </router-link>
         </div>
     </div>
   </header>
