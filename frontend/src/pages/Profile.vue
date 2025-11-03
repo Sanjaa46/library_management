@@ -12,7 +12,7 @@
             </div>
             <p class="w-[50%] m-auto text-center text-[20px] font-bold">John Doe</p>
             <div class="w-[30%] m-auto bg-green-500 rounded-full italic text-[10px]">
-                <p class=" text-center">Status: membership</p>
+                <p class=" text-center"><b>Status:</b> membership</p>
             </div>
 
             <!-- Buttons -->
@@ -28,10 +28,12 @@
         </div>
 
         <!-- Line -->
-        <div class="relative h-[475px] w-1 bg-[#118ab2] left-[-1px] top-[37px]"></div>
+        <div class="relative h-[475px] w-1 bg-[#118ab2] left-[-1px] top-[20px]"></div>
         
         <!-- Info, Chnage Password and My Books -->
-        <div class="w-[70%]"></div>
+        <div class="w-[70%]">
+            <ProfileInfo />
+        </div>
 
     </section>
     <Footer></Footer>
@@ -40,6 +42,7 @@
 <script setup>
 import Header from '../assets/components/Header.vue';
 import Footer from '../assets/components/Footer.vue';
+import ProfileInfo from '../assets/components/ProfileInfo.vue';
 
 
 </script>
