@@ -1,8 +1,8 @@
 <template>
 <section class="max-w-[1120px] mx-auto px-4 py-12">
-    <div class="mb-8 text-[24px] font-bold relative">
-        <div class="absolute w-1 h-12 bg-gradient-to-b from-blue-500 to-purple-500 left-0"></div>
-        <h1 class="text-4xl font-bold pl-5">Featured Books</h1>
+    <div class="w-[1120px] my-8 mx-auto text-[24px] font-bold relative">
+        <div class="absolute w-1 h-12 bg-[#118ab2] left-0"></div>
+        <h1 class="text-4xl font-bold pl-5 pt-2">Featured Books</h1>
     </div>
     
     <Carousel v-bind="carouselConfig">

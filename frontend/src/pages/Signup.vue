@@ -1,12 +1,12 @@
 <template>
   <div class="m-3 grid grid-cols-2 h-screen">
     <!-- LEFT SIDE: Shapes -->
-    <div class="relative overflow-visible -m-10">
+    <div class="relative overflow-hidden -m-10">
       <div class="bg-[#2C3E50] w-[100%] h-[120%] absolute top-[-200px] right-[-0px] rotate-[12deg] origin-top-right rounded-tl-[20px]"></div>
 
-      <div class="bg-[#254B71] w-[105%] h-[50%] absolute bottom-[-350px] right-[100px] rotate-[15deg] origin-bottom-left rounded-[20px]"></div>
+      <div class="bg-[#254B71] w-[105%] h-[50%] absolute bottom-[-150px] right-[100px] rotate-[15deg] origin-bottom-left rounded-[20px]"></div>
 
-      <div class="bg-[#577592] w-[85%] h-[60%] absolute top-[-450px] right-[40px] rotate-[-12deg] rounded-[20px]"></div>
+      <div class="bg-[#577592] w-[85%] h-[60%] absolute top-[-380px] right-[48px] rotate-[-12deg] rounded-[20px]"></div>
     </div> 
 
     <!-- RIGHT SIDE -->

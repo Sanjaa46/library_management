@@ -28,6 +28,11 @@ const routes = [
 		path: "/profile",
 		component: () => import("@/pages/Profile.vue"),
 	},
+	{
+		name: "Bookinfo",
+		path: "/book",
+		component: () => import("@/pages/BookInfo.vue"),
+	},
 ]
 
 const router = createRouter({

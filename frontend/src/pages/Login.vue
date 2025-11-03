@@ -1,5 +1,5 @@
 <template>
-  <div class="m-3 grid grid-cols-2 h-screen">
+  <div class="max-w-[100%] m-3 grid grid-cols-2 h-screen">
     <!-- LEFT SIDE -->
     <div class="flex items-center justify-center">
       <Card title="Login to your FrappeUI App!" class="w-full max-w-md bg-[#f7f4f0] z-10 px-12 py-10 rounded-xl shadow-lg">
@@ -34,12 +34,12 @@
     </div>
 
     <!-- RIGHT SIDE: Shapes -->
-    <div class="relative overflow-visible -m-10">
+    <div class="relative overflow-hidden -m-10">
       <div class="bg-[#2C3E50] w-[100%] h-[120%] absolute -top-20 right-[-100px] -rotate-12 origin-top-right rounded-tl-[20px]"></div>
 
       <div class="bg-[#254B71] w-[150%] h-[150%] absolute bottom-[8px] right-[-400px] rotate-[60deg] origin-bottom-left"></div>
 
-      <div class="bg-[#577592] w-[85%] h-[60%] absolute top-[-450px] right-[40px] rotate-12 rounded-bl-[20px] rounded-br-[20px]"></div>
+      <div class="bg-[#577592] w-[85%] h-[60%] absolute top-[-380px] right-[40px] rotate-12 rounded-bl-[20px] rounded-br-[20px]"></div>
     </div> 
   </div>
 
