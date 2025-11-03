@@ -18,6 +18,16 @@ const routes = [
 		path: "/account/signup",
 		component: () => import("@/pages/Signup.vue"),
 	},
+	{
+		name: "Search",
+		path: "/search",
+		component: () => import("@/pages/SearchResult.vue"),
+	},
+	{
+		name: "Profile",
+		path: "/profile",
+		component: () => import("@/pages/Profile.vue"),
+	},
 ]
 
 const router = createRouter({
@@ -26,24 +36,8 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-	
-	let isLoggedIn = session.isLoggedIn
-	try {
-		await userResource.promise
-	} catch (error) {
-		isLoggedIn = false
-	}
-
-	const publicPages = ["Login", "Signup", "Home"]
-	const authRequired = !publicPages.includes(to.name)
-
-	if (to.name === "Login" || to.name === "Signup") {
-		next({ name: "Home" })
-	} else if (!isLoggedIn && authRequired) {
-		next({ name: "Login" })
-	} else {
-		next()
-	}
-})
+  // For development: allow all pages
+  next();
+});
 
 export default router

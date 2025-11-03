@@ -1,4 +1,5 @@
 <template>
+<Header></Header>
 <section class="max-w-[1120px] mx-auto px-4 py-12">
     <div class="mb-8 text-[24px] font-bold relative">
         <div class="absolute w-1 h-12 bg-gradient-to-b from-blue-500 to-purple-500 left-0"></div>
@@ -10,10 +11,13 @@
         <Article v-for="book in books" :key="book.id" :book="book" />
     </div>
 </section>
+<Footer></Footer>
 </template>
 
 <script setup>
 import Article from '../assets/components/Article.vue';
+import Header from '../assets/components/Header.vue';
+import Footer from '../assets/components/Footer.vue';
 
 const books = [
   { id: 1, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
