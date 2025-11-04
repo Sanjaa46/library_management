@@ -25,9 +25,8 @@ def get_books(status=None):
     data = frappe.get_all("Article", fields=["article_name", "author", "status", "image"], filters=filters)
     return {"data": data}
 
-@frappe.whitelist(methods=["GET"], allow_guest=True)
-@require_auth
-def search(query=None, page=1, page_size=12):
+@frappe.whitelist(methods=["GET"], allow_guest=False)
+def search(query, page, page_size):
     if not query:
         return {"result": 0, "total": 0, "page": page, "page_size": page_size}
     
@@ -40,6 +39,7 @@ def search(query=None, page=1, page_size=12):
     results = frappe.db.get_all(
         "Article",
         filters={"article_name": ["like", f"%{query}%"]},
+        fields=["article_name", "author", "image"],
         limit_start=offset,
         limit_page_length=page_size
     )
