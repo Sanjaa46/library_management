@@ -99,6 +99,7 @@ def login(email, password):
     frappe.db.commit()
 
     frappe.log_error(f"User {username} logged in successfully")
+    print(access_token)
     return {
         "access_token": access_token,
         "expires_in": ACCESS_EXPIRES,

@@ -5,6 +5,8 @@ app_description = "Library Management System"
 app_email = "sanjaas880@gmail.com"
 app_license = "mit"
 
+csrf_exempt_methods = ["library_management.auth.login"]
+
 # Apps
 # ------------------
 
@@ -61,7 +63,9 @@ app_license = "mit"
 
 # website user home page (by Role)
 # role_home_page = {
-# 	"Role": "home_page"
+# 	"Library_member": "/frontend",
+#     "Librarian": "/app",
+#     "Administrator": "/app"
 # }
 
 # Generators
@@ -245,13 +249,6 @@ app_license = "mit"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
-
-
-test_string = "value"
-test_list = ["value"]
-test_dict = {
- "key": "value"
-}
 
 
 scheduler_events = {

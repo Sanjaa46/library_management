@@ -4,15 +4,17 @@
     <div class="flex items-center justify-center">
       <Card title="Login to your FrappeUI App!" class="w-full max-w-md bg-[#f7f4f0] z-10 px-12 py-10 rounded-xl shadow-lg">
         <h2 class="text-xl font-medium text-center mb-8">Sign In</h2>
-        <form class="flex flex-col space-y-5 w-full" @submit.prevent="submit">
+        <form class="flex flex-col space-y-5 w-full" >
           <Input
             required
+            v-model="email"
             name="email"
             type="text"
             placeholder="Email"
           />
           <Input
             required
+            v-model="password"
             name="password"
             type="password"
             placeholder="Password"
@@ -20,7 +22,7 @@
           <div class="text-sm text-right text-gray-500 cursor-pointer hover:underline">
             Forgot password?
           </div>
-          <Button :loading="session.login.loading" variant="solid" class="bg-[#007C91] text-white py-2 rounded hover:bg-[#006273] transition">
+          <Button @click="handleLogin" variant="solid" class="bg-[#007C91] text-white py-2 rounded hover:bg-[#006273] transition">
             Login
           </Button>
         </form>
@@ -46,14 +48,92 @@
 
 </template>
 
-<script lang="ts" setup>
-import { session } from "../data/session"
+<script setup>
+import { ref } from 'vue';
 
-function submit(e) {
-	const formData = new FormData(e.target)
-	session.login.submit({
-		email: formData.get("email"),
-		password: formData.get("password"),
-	})
+const email = ref('')
+const password = ref('')
+const userType = ref('member')
+
+async function handleLogin() {
+  if (userType.value === 'member') {
+    await loginLibraryMember()
+  } else {
+    await loginStaff()
+  }
 }
+
+async function loginLibraryMember() {
+  console.log('Email:', email.value)
+  console.log('Timestamp:', new Date().toISOString())
+  
+  try {
+    const response = await fetch('http://localhost:8000/api/method/library_management.auth.login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+      })
+    })
+    
+    console.log('Response loginLibraryMember Status:', response.status)
+    console.log('Response OK:', response.ok)
+    
+    const data = await response.json()
+    console.log('Response Data:', data)
+
+    if (data.message && data.message.access_token) {
+      localStorage.setItem('library_token', data.message.access_token)
+      console.log('Token saved successfully to local storage')
+      console.log('Token:', data.message.access_token.substring(0, 20) + '...')
+      alert('Login successful!')
+    } else {
+      console.error('Login failed - No access token in response')
+      console.error('Response structure:', JSON.stringify(data, null, 2))
+      alert('Invalid Member login')
+    }
+  } catch (error) {
+    console.error('Login error occurred:', error)
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    })
+    alert('Login failed. Please check console for details.')
+  }
+  
+}
+
+async function loginStaff() {
+  try {
+    alert("Hello")
+    const response = await fetch('/api/method/login', {
+      method: 'POST',
+      headers: { 'Content-type': 'application/json' },
+      body: JSON.stringify({
+        usr: email.value,
+        pwd: password.value,
+      })
+    })
+    const data = await response.json()
+    if (data.message === 'Logged In') {
+      window.location.href = '/app'
+    } else {
+      alert("Invalid staff login")
+    }
+  } catch (error) {
+    console.error('Login error occurred:', error)
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    })
+    alert('Login failed. Please check console for details.')
+  }
+
+
+}
+
+
 </script>
