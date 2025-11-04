@@ -28,7 +28,7 @@
         </form>
         <div class="text-center mt-6 text-sm">
           Don't have an account?
-          <a href="/account/signup" class="text-blue-600 hover:underline">
+          <a href="/frontend/account/signup" class="text-blue-600 hover:underline">
             Sign up
           </a>
         </div>

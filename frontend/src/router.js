@@ -19,7 +19,7 @@ const routes = [
 		component: () => import("@/pages/Signup.vue"),
 	},
 	{
-		name: "Search",
+		name: "search",
 		path: "/frontend/search",
 		component: () => import("@/pages/SearchResult.vue"),
 	},
@@ -41,8 +41,29 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  // For development: allow all pages
-  next();
+  	// For development: allow all pages
+	// next()
+
+	let isLoggedIn = session.isLoggedIn
+	try {
+		await userResource.promise
+	} catch (error) {
+		isLoggedIn = false
+	}
+	
+	
+	// If user is not logged in and tries to visit a protected page
+	if (!isLoggedIn && !["Login", "Signup"].includes(to.name)) {
+		return next({ name: "Login" });
+	}
+
+	// If user is logged in and tries to visit Login or Signup
+	if (isLoggedIn && ["Login", "Signup"].includes(to.name)) {
+		return next({ name: "Home" });
+	}
+
+	// Otherwise, allow navigation
+	next();
 });
 
 export default router

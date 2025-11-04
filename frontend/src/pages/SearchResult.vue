@@ -92,7 +92,7 @@
 import Article from '../assets/components/Article.vue';
 import Header from '../assets/components/Header.vue';
 import Footer from '../assets/components/Footer.vue';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
@@ -196,6 +196,12 @@ onMounted(async () => {
     // Get query from URL params
     searchQuery.value = route.query.q || route.query.query || 'a';
     currentPage.value = parseInt(route.query.page) || 1;
+
+    watch(() => route.query, (newQuery) => {
+       searchQuery.value = newQuery.q || newQuery.query || 'a';
+       currentPage.value = parseInt(newQuery.page) || 1;
+       fetchBooks();
+   }, { deep: true });
     
     await fetchBooks();
 });
