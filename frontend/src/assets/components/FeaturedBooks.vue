@@ -6,7 +6,7 @@
     </div>
     
     <Carousel v-bind="carouselConfig">
-      <Slide v-for="book in books" :key="book.id">
+      <Slide v-for="book in books" :key="book.article_name">
         <Article :book="book" />
       </Slide>
 
@@ -21,6 +21,7 @@
 import 'vue3-carousel/carousel.css';
 import Article from '../components/Article.vue';
 import { Carousel, Slide, Navigation } from 'vue3-carousel';
+import { ref, onMounted } from 'vue';
 
 const carouselConfig = {
   itemsToShow: 4.5,
@@ -40,17 +41,25 @@ const carouselConfig = {
   }
 };
 
-const books = [
-  { id: 1, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
-  { id: 2, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
-  { id: 3, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
-  { id: 4, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
-  { id: 5, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
-  { id: 6, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
-  { id: 7, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
-  { id: 8, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
-  { id: 9, title: 'Rich Dad Poor Dad', author: 'Robert Kiyosaki', image: '/src/assets/images/richpoor.jpeg' },
-];
+const books = ref([])
+const loading = ref(false)
+
+onMounted(async () => {
+  try {
+    const response = await fetch('/api/method/library_management.api.get_books', {
+      credentials: 'include'
+    });
+    const data = await response.json();
+    books.value = data.message.data;
+  } catch (error) {
+    console.error('Failed to fetch books:', error);
+    books.value = [];
+  } finally {
+    loading.value = false;
+  }
+  console.log(books.value);
+});
+
 </script>
 
 <style>

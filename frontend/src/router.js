@@ -4,39 +4,39 @@ import { session } from "./data/session"
 
 const routes = [
 	{
-		path: "/",
+		path: "/frontend",
 		name: "Home",
 		component: () => import("@/pages/Home.vue"),
 	},
 	{
 		name: "Login",
-		path: "/account/login",
+		path: "/frontend/account/login",
 		component: () => import("@/pages/Login.vue"),
 	},
 	{
 		name: "Signup",
-		path: "/account/signup",
+		path: "/frontend/account/signup",
 		component: () => import("@/pages/Signup.vue"),
 	},
 	{
 		name: "Search",
-		path: "/search",
+		path: "/frontend/search",
 		component: () => import("@/pages/SearchResult.vue"),
 	},
 	{
 		name: "Profile",
-		path: "/profile",
+		path: "/frontend/profile",
 		component: () => import("@/pages/Profile.vue"),
 	},
 	{
 		name: "Bookinfo",
-		path: "/book",
+		path: "/frontend/book",
 		component: () => import("@/pages/BookInfo.vue"),
 	},
 ]
 
 const router = createRouter({
-	history: createWebHistory("/frontend"),
+	history: createWebHistory(),
 	routes,
 })
 

@@ -28,4 +28,6 @@
 import Header from '../assets/components/Header.vue';
 import Footer from '../assets/components/Footer.vue';
 import FeaturedBooks from '../assets/components/FeaturedBooks.vue';
+
+
 </script>

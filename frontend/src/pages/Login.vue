@@ -4,7 +4,7 @@
     <div class="flex items-center justify-center">
       <Card title="Login to your FrappeUI App!" class="w-full max-w-md bg-[#f7f4f0] z-10 px-12 py-10 rounded-xl shadow-lg">
         <h2 class="text-xl font-medium text-center mb-8">Sign In</h2>
-        <form class="flex flex-col space-y-5 w-full" >
+        <form class="flex flex-col space-y-5 w-full" @submit.prevent="submit">
           <Input
             required
             v-model="email"
@@ -22,7 +22,7 @@
           <div class="text-sm text-right text-gray-500 cursor-pointer hover:underline">
             Forgot password?
           </div>
-          <Button @click="handleLogin" variant="solid" class="bg-[#007C91] text-white py-2 rounded hover:bg-[#006273] transition">
+          <Button :locading="session.login.loading" variant="solid" class="bg-[#007C91] text-white py-2 rounded hover:bg-[#006273] transition">
             Login
           </Button>
         </form>
@@ -49,11 +49,26 @@
 </template>
 
 <script setup>
+import { session } from '../data/session'
+
+// Session-based Authentication
+function submit(e) {
+  const formData = new FormData(e.target)
+	session.login.submit({
+    email: formData.get("email"),
+		password: formData.get("password"),
+	})
+}
+
+
+// Toke-based Authentication
 import { ref } from 'vue';
 
 const email = ref('')
 const password = ref('')
 const userType = ref('member')
+
+
 
 async function handleLogin() {
   if (userType.value === 'member') {

@@ -22,11 +22,18 @@ export const session = reactive({
 				pwd: password,
 			}
 		},
-		onSuccess(data) {
+		onSuccess: async function(data) {
 			userResource.reload()
 			session.user = sessionUser()
 			session.login.reset()
-			router.replace(data.default_route || "/")
+			
+			const userName = await getUserRoles();
+
+			if (userName === "Administrator" || userName === "librarian@example.com") {
+				router.replace("/app"); // Frappe Desk
+			} else {
+				router.replace("/frontend"); // Library Member UI
+			}
 		},
 	}),
 	logout: createResource({
@@ -40,3 +47,11 @@ export const session = reactive({
 	user: sessionUser(),
 	isLoggedIn: computed(() => !!session.user),
 })
+
+async function getUserRoles() {
+  const user = await fetch("/api/method/frappe.auth.get_logged_user", {
+    credentials: "include",
+  }).then(r => r.json());
+
+  return user.message;
+}
