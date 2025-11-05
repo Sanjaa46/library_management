@@ -22,6 +22,7 @@
             <!-- Buttons -->
             <div class="flex flex-col items-center space-y-3 mt-5">
                 <button 
+                    @click="createCheckoutSession"
                     :class='[" w-[215px] h-[35px] mt-5 bg-[#118ab2] hover:bg-[#016475] text-white-overlay-900 rounded-[10px]", buyButtonClasses]'
                 >
                     Buy Membership
@@ -64,10 +65,10 @@ const current = ref('ProfileInfo')
 const currentComponent = computed(() => componentsMap[current.value])
 
 const user = ref({})
-
 const first_name = ref("John");
 const last_name = ref("Doe");
 const membership = ref(false)
+const checkoutUrl = ref("")
 
 const statusText = computed(() => {
     return membership.value ? "Membership" : "Nonmembership"
@@ -110,5 +111,21 @@ onMounted(async () => {
         console.error('Failed to fetch user info:', error);
     }
 });
+
+async function createCheckoutSession() {
+
+    const url = `/api/method/library_management.api.create_checkout_session`;
+
+    const response = await fetch(url, {
+        credentials: 'include',
+        method: 'POST'
+    })
+    const data = await response.json();
+    console.log(data)
+
+    checkoutUrl.value = data.message.url
+    window.href.replace(checkoutUrl)
+
+}
 
 </script>

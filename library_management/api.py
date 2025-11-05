@@ -252,7 +252,7 @@ def reset_password(token, new_password):
 
     return {"Success": True, "message": "Password reseted succesfully!"}
 
-@frappe.whitelist(methods=['POST'], allow_guest=True)
+@frappe.whitelist(methods=['POST'], allow_guest=False)
 def create_checkout_session():
     site_config = frappe.get_site_config()
     stripe.api_key = site_config.get("stripe_secret_key")
@@ -314,8 +314,8 @@ def create_checkout_session():
             "quantity": 1,
         }],
         mode="payment",
-        success_url=f"{frappe.utils.get_url()}/membership-success?session_id={{CHECKOUT_SESSION_ID}}",
-        cancel_url=f"{frappe.utils.get_url()}/membership-cancel",
+        success_url=f"{frappe.utils.get_url()}/frontend/membership-success?session_id={{CHECKOUT_SESSION_ID}}",
+        cancel_url=f"{frappe.utils.get_url()}/frontend/membership-cancel",
     )
 
     return {"sessionId": session.id, "url": session.url}
