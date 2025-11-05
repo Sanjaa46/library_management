@@ -3,7 +3,12 @@
 <section class="max-w-[1120px] mx-auto px-4 py-12">
     <div class="w-[1120px] my-8 mx-auto text-[24px] font-bold relative">
         <div class="absolute w-1 h-12 bg-[#118ab2] left-0"></div>
-        <h1 class="text-4xl font-bold pl-5 pt-2">Search result for <i>'{{ searchQuery }}'</i></h1>
+        <div v-if="searchQuery">
+            <h1 class="text-4xl font-bold pl-5 pt-2">Search result for <i>'{{ searchQuery }}'</i></h1>
+        </div>
+        <div v-else="searchQuery">
+            <h1 class="text-4xl font-bold pl-5 pt-2">Books</h1>
+        </div>
     </div>
 
     <!-- Loading state -->
@@ -159,6 +164,7 @@ const fetchBooks = async () => {
             method: 'GET',
         });
         const data = await response.json()
+        console.log(data)
 
         books.value = data.message.results;
         total.value = data.message.total;
@@ -194,11 +200,11 @@ const goToPage = (page) => {
 
 onMounted(async () => {
     // Get query from URL params
-    searchQuery.value = route.query.q || route.query.query || 'a';
+    searchQuery.value = route.query.q || route.query.query;
     currentPage.value = parseInt(route.query.page) || 1;
 
     watch(() => route.query, (newQuery) => {
-       searchQuery.value = newQuery.q || newQuery.query || 'a';
+       searchQuery.value = newQuery.q || newQuery.query;
        currentPage.value = parseInt(newQuery.page) || 1;
        fetchBooks();
    }, { deep: true });

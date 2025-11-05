@@ -127,6 +127,7 @@ async function handleSignup() {
 
     if (data.message && data.message.success === true) {
       alert('Signup successful!')
+      window.location.href = "/frontend/account/login"
     } else {
       console.error('Signup failed')
       console.error('Response structure:', JSON.stringify(data, null, 2))

@@ -26,27 +26,27 @@ def get_books(status=None):
     return {"data": data}
 
 @frappe.whitelist(methods=["GET"], allow_guest=False)
-def search(query, page, page_size):
-    if not query:
-        return {"result": 0, "total": 0, "page": page, "page_size": page_size}
-    
+def search(query=None, page=1, page_size=2):
     # convert page parameters to int
     page = int(page)
     page_size = int(page_size)
     offset = (page - 1) * page_size
 
+    if query in [None, "", "None", "undefined", "null"]:
+        query = None
+    
+    filters = {"article_name": ["like", f"%{query}%"]} if query else {}
+
     # Search Articles where title matches query
     results = frappe.db.get_all(
         "Article",
-        filters={"article_name": ["like", f"%{query}%"]},
+        filters=filters,
         fields=["article_name", "author", "image"],
         limit_start=offset,
         limit_page_length=page_size
     )
-    
 
-    # Count total matches
-    total = frappe.db.count("Article", filters=[["article_name", "like", f"%{query}%"]])
+    total = frappe.db.count("Article", filters=filters if query else None)
 
     return {
         "results": results,
