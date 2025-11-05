@@ -11,16 +11,22 @@
                 </div>
             </div>
             <div> <!-- Sitemap -->
-                <div class="w-full h-full flex items-center justify-center">
+                <div class="relative w-full h-full flex items-center justify-center bottom-5">
                     <ul class="text-center">
                         <h1 class="font-bold text-[20px] mb-2">Site Map</h1>
-                        <li><a href="#">Home Page</a></li>
-                        <li><a href="#">Profile</a></li>
-                        <li><a href="#">Books</a></li>
+                        <router-link to="/frontend">
+                            <li>Home Page</li>
+                        </router-link>
+                        <router-link to="/frontend/profile">
+                            <li>Profile</li>
+                        </router-link>
+                        <router-link to="/frontend/search">
+                            <li>Books</li>
+                        </router-link>
                     </ul>
                 </div>
             </div>
-            <a href="#" class="absolute bottom-5 z-[999] right-10"><img src="../images/arrow.png" alt="arrow"></a>
+            <button @click="scrollTop" class="absolute bottom-5 z-[999] right-[-100px] "><img src="../images/arrow.png" alt="arrow"></button>
         </div>
         
     </footer>
@@ -29,4 +35,8 @@
     </div>
 </template>
 
-<script setup></script>
+<script setup>
+function scrollTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+</script>

@@ -57,7 +57,6 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
-  console.log(books.value);
 });
 
 </script>
