@@ -8,7 +8,7 @@
         <!-- Pro Image, Fullname and three buttons -->
         <div class=" w-[30%]">
             <div class="w-[250px] h-[250px] mx-auto my-5 p-[7px] border-[3px] border-[#118ab2] rounded-full">
-                <img class="m-auto w-[235px] h-[235px] object-fill rounded-[50%]" src="../assets/images/testpro.jpeg" alt="profile image">
+                <img class="m-auto w-[235px] h-[235px] object-fill rounded-[50%]" src="../assets/images/profile.png" alt="profile image">
             </div>
             <p class="w-[50%] m-auto text-center text-[20px] font-bold">John Doe</p>
             <div class="w-[30%] m-auto bg-green-500 rounded-full italic text-[10px]">
