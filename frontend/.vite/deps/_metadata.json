@@ -1,0 +1,43 @@
+{
+  "hash": "da5db038",
+  "configHash": "2eb77f1b",
+  "lockfileHash": "3ca41cd1",
+  "browserHash": "fe48b068",
+  "optimized": {
+    "vue": {
+      "src": "../../node_modules/vue/dist/vue.runtime.esm-bundler.js",
+      "file": "vue.js",
+      "fileHash": "429c4389",
+      "needsInterop": false
+    },
+    "frappe-ui": {
+      "src": "../../node_modules/frappe-ui/src/index.ts",
+      "file": "frappe-ui.js",
+      "fileHash": "5da74b10",
+      "needsInterop": false
+    },
+    "vue-router": {
+      "src": "../../node_modules/vue-router/dist/vue-router.mjs",
+      "file": "vue-router.js",
+      "fileHash": "cd1d051b",
+      "needsInterop": false
+    },
+    "socket.io-client": {
+      "src": "../../node_modules/socket.io-client/build/esm/index.js",
+      "file": "socket__io-client.js",
+      "fileHash": "50cd0487",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-OVUOPIRS": {
+      "file": "chunk-OVUOPIRS.js"
+    },
+    "chunk-JAE2V2R3": {
+      "file": "chunk-JAE2V2R3.js"
+    },
+    "chunk-LY5AGXVD": {
+      "file": "chunk-LY5AGXVD.js"
+    }
+  }
+}

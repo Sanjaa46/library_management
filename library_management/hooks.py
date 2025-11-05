@@ -5,6 +5,8 @@ app_description = "Library Management System"
 app_email = "sanjaas880@gmail.com"
 app_license = "mit"
 
+csrf_exempt_methods = ["library_management.auth.login"]
+
 # Apps
 # ------------------
 
@@ -61,7 +63,9 @@ app_license = "mit"
 
 # website user home page (by Role)
 # role_home_page = {
-# 	"Role": "home_page"
+# 	"Library_member": "/frontend",
+#     "Librarian": "/app",
+#     "Administrator": "/app"
 # }
 
 # Generators
@@ -247,15 +251,9 @@ app_license = "mit"
 
 
 
-test_string = "value"
-test_list = ["value"]
-test_dict = {
- "key": "value"
-}
-
-
 scheduler_events = {
     "daily": [
         "library_management.tasks.check_overdue_books"
     ]
 }
+website_route_rules = [{'from_route': '/frontend/<path:app_path>', 'to_route': 'frontend'},]
