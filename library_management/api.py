@@ -129,35 +129,48 @@ def my_books():
         "books": books
     } 
 
-@frappe.whitelist(methods=["GET"], allow_guest=True)
-@require_auth
+@frappe.whitelist(methods=["GET"], allow_guest=False)
 def profile():
-    user_email = frappe.local.user
-    print(user_email)
+    user_email = frappe.session.user
 
     user = frappe.get_all("Library Member", filters={"email_address": user_email}, fields={"name", "first_name", "last_name", "phone", "email_address"})[0]
-    print(user)
+
+    valid_membership = frappe.db.exists(
+        "Library Membership",
+        {
+            "library_member": user["name"],
+            "docstatus": 1,
+            "from_date": ("=<", frappe.utils.nowdate()),
+            "to_date": (">", frappe.utils.nowdate()),
+        },
+    )
+    print("Membership: ", valid_membership)
+    if not valid_membership:
+        membership = False
+    else:
+        membership = True
 
     data = {
         "id": user.name,
         "first_name": user.first_name,
         "last_name": user.last_name,
         "phone": user.phone,
-        "email": user.email_address
+        "email": user.email_address,
+        "membership": membership
     }
 
     return data
 
 @frappe.whitelist(methods=["PATCH"], allow_guest=True)
-@require_auth
 def change_password(old_password, new_password):
-    user_email = frappe.local.user
+    user_email = frappe.session.user
+    print(user_email)
 
     # change_password method raises an exception not boolean!
     try:
         frappe.utils.password.check_password(user_email, old_password)
     except:
-        frappe.throw("Old password is incorrect", frappe.AuthenticationError)
+        return {"success": False, "message": "Old password is incorrect"}
     
     
     frappe.utils.password.update_password(user_email, new_password)
@@ -240,12 +253,11 @@ def reset_password(token, new_password):
     return {"Success": True, "message": "Password reseted succesfully!"}
 
 @frappe.whitelist(methods=['POST'], allow_guest=True)
-@require_auth
 def create_checkout_session():
     site_config = frappe.get_site_config()
     stripe.api_key = site_config.get("stripe_secret_key")
 
-    user_email = frappe.local.user
+    user_email = frappe.session.user
     
 
     try:

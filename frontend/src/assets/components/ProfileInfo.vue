@@ -5,23 +5,23 @@
     <ul class=" pl-[20px] space-y-4">
         <li>
             <p class=" text-black-overlay-500">ID</p>
-            <p>LM0001</p>
+            <p>{{ props.user.id }}</p>
         </li>
         <li>
             <p class=" text-black-overlay-500">Firstname</p>
-            <p>John</p>
+            <p>{{ props.user.first_name }}</p>
         </li>
         <li>
             <p class=" text-black-overlay-500">Lastname</p>
-            <p>Doe</p>
+            <p>{{ props.user.last_name }}</p>
         </li>
         <li>
             <p class=" text-black-overlay-500">Email</p>
-            <p>john.doe@example.com</p>
+            <p>{{ props.user.email }}</p>
         </li>
         <li>
             <p class=" text-black-overlay-500">Phone</p>
-            <p>12345678</p>
+            <p>{{ props.user.phone }}</p>
         </li>
     </ul>
 </div>
@@ -29,4 +29,14 @@
 </template>
 
 
-<script></script>
+<script setup>
+import { ref, onMounted } from 'vue';
+
+const props = defineProps({
+  user: {
+    type: Object,
+    required: true
+  }
+});
+
+</script>
