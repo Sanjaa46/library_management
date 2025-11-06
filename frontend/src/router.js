@@ -33,6 +33,11 @@ const routes = [
 		path: "/frontend/book",
 		component: () => import("@/pages/BookInfo.vue"),
 	},
+	{
+		name: "MembershipSuccess",
+		path: "/frontend/membership-success",
+		component: () => import("@/pages/MembershipSuccess.vue"),
+	},
 ]
 
 const router = createRouter({

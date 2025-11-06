@@ -124,7 +124,7 @@ async function createCheckoutSession() {
     console.log(data)
 
     checkoutUrl.value = data.message.url
-    window.href.replace(checkoutUrl)
+    window.location.href = checkoutUrl.value
 
 }
 

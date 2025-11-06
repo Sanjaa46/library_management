@@ -320,6 +320,26 @@ def create_checkout_session():
 
     return {"sessionId": session.id, "url": session.url}
 
+@frappe.whitelist(methods=["GET"], allow_guest=False)
+def verify_checkout_session(session_id=None):
+    if not session_id:
+        frappe.throw("Session ID is required!")
+    
+    site_config = frappe.get_site_config()
+    stripe.api_key = site_config.get("stripe_secret_key")
+
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+
+        return {
+            "verified": session.payment_status == "paid",
+            "session_id": session_id,
+            "payment_status": session.payment_status,
+        }
+    except Exception as e:
+        frappe.log_error(f"Error verifying session: {str(e)}")
+        return {"verified": False, "error": str(e)}
+
 @frappe.whitelist(allow_guest=True)
 def stripe_webhook():
     site_config = frappe.get_site_config()
