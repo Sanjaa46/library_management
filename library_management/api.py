@@ -56,8 +56,7 @@ def search(query=None, page=1, page_size=2):
         "total_pages": (total + page_size - 1) // page_size
     }
 
-@frappe.whitelist(methods=["GET"], allow_guest=True)
-@require_auth
+@frappe.whitelist(allow_guest=False)
 def book_info(article_name=None):
     if not article_name:
         frappe.throw("Enter book name!")
