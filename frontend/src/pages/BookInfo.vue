@@ -26,7 +26,11 @@
         <p>
             {{ book.description }}
         </p>
-        <Button variant="solid" class="bg-[#1290b9] w-[90px] text-white my-10 rounded hover:bg-[#016475] transition">
+        <Button 
+        @click="issueBook" 
+        variant="solid" 
+        :class='["bg-[#1290b9] w-[90px] text-white my-10 rounded hover:bg-[#016475] transition", issueButtonClasses]'
+        >
         Issue
         </Button>
     </div>
@@ -40,20 +44,21 @@
 <script setup>
 import Header from '../assets/components/Header.vue';
 import Footer from '../assets/components/Footer.vue';
-import { defineProps, ref, onMounted } from 'vue';
+import { defineProps, ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 
 const book = ref({})
 const articleName = ref("")
+const issueSuccess = ref(false)
 
 onMounted(async () => {
     articleName.value = route.query.article_name;
-    console.log(articleName.value)
 
     const url = `/api/method/library_management.api.book_info?article_name=${articleName.value}`
 
+    // Fetch book info
     try {
         const response = await fetch(url, {
             credentials: 'include',
@@ -69,6 +74,45 @@ onMounted(async () => {
     catch (error) {
         console.error("Failed to fetch books: ", error);
     }
+
+    // Check user have an active issue
+    try {
+        const check_issue_url = `/api/method/library_management.api.has_active_issue?book=${articleName.value}`
+        
+        const response = await fetch(check_issue_url, {
+            credentials: 'include'
+        })
+        const check_issue_data = await response.json();
+        console.log("Has active issue: ", check_issue_data.message)
+        issueSuccess.value = check_issue_data.message
+    } catch(error) {
+        console.error("Failed to check the user have an active issue: ", error)
+    }
 })
+
+const issueButtonClasses = computed(() => {
+    return issueSuccess.value
+        ? "opacity-0"
+        : "opacity-100"
+})
+
+async function issueBook() {
+
+    const url = `/api/method/library_management.api.issue_book?book=${articleName.value}`
+    
+    try {
+        const response = await fetch(url, {
+            credentials: 'include'
+        })
+        const data = await response.json();
+        console.log("Issue book response: ", data.message)
+        if (!data.message.success) {
+            alert("You already requested this book!")
+        }
+    } catch(error) {
+        console.error("Failed to issue the book: ", error)
+        issueSuccess.value = false;
+    }
+}
 
 </script>

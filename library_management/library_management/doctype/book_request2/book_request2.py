@@ -6,6 +6,19 @@ from frappe.model.document import Document
 
 
 class BookRequest2(Document):
+	def before_insert(self):
+		exists = frappe.db.exists(
+			"Book Request2",
+			{
+				"article": self.article,
+				"library_member": self.library_member,
+				"status": "Requested"
+			}
+		)
+		if exists:
+			frappe.throw("You have already requested this book")
+
+
 	def on_update(self):
 		if not self.library_member:
 			user = frappe.session.user

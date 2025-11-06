@@ -6,7 +6,6 @@ frappe.ui.form.on("Article", {
             frappe.call({
                 method: "library_management.api.has_active_issue",
                 args: {
-                    user_email: user_email,
                     book: frm.doc.name
                 },
                 callback: function(r) {

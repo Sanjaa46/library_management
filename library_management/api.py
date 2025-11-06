@@ -77,24 +77,30 @@ def book_info(article_name=None):
 
     return data
 
-@frappe.whitelist()
-def issue_book(user_email, book):
-    user = frappe.get_value("Library Member", {"email_address": user_email}, "name")
-
-    transaction = frappe.get_doc({
-        "doctype": "Library Transaction",
-        "article": book,
-        "library_member": user,
-        "type": "Issue",
-        "date": frappe.utils.nowdate()
-    })
-    transaction.insert(ignore_permissions=True)
-
-    return {"Seccess": True, "url": "http://library.localhost:8000/articles/rich-and-poor"}
-
-@frappe.whitelist()
-def has_active_issue(user_email, book):
+@frappe.whitelist(allow_guest=True)
+def issue_book(book):
+    user_email = frappe.session.user
     user = frappe.get_value("Library Member", {"email_address": user_email})
+
+    try:
+        book_request = frappe.get_doc({
+            "doctype": "Book Request2",
+            "article": book,
+            "library_member": user,
+            "status": "Requested"
+        })
+        book_request.insert()
+        frappe.db.commit()
+    except Exception as e:
+        return {"success": False, "error": e}
+
+    return {"success": True}
+
+@frappe.whitelist()
+def has_active_issue(book):
+    user_email = frappe.session.user
+    user = frappe.get_value("Library Member", {"email_address": user_email})
+    loan_period = frappe.db.get_single_value("Library Settings", "loan_period")
 
     exists = frappe.db.exists(
         "Library Transaction",
@@ -102,7 +108,8 @@ def has_active_issue(user_email, book):
             "article": book,
             "library_member": user,
             "type": "Issue",
-            "docstatus": 0
+            "date": ("<=", frappe.utils.add_to_date(frappe.utils.nowdate(), days=loan_period)),
+            "docstatus": 1
         }
     )
 
