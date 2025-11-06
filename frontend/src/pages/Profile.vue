@@ -33,11 +33,17 @@
                 <button @click="current = 'MyBooks'">
                     My Books >
                 </button>
+                <button
+                @click="handleLogout"
+                class=" w-[215px] h-[35px] mt-5 bg-[#118ab2] hover:bg-[#016475] text-white-overlay-900 rounded-[10px]"
+                >
+                    Logout
+                </button>
             </div>
         </div>
 
         <!-- Line -->
-        <div class="relative h-[475px] w-1 bg-[#118ab2] left-[-1px] top-[20px]"></div>
+        <div class="relative h-[475px] w-1 bg-[#118ab2] left-[-1px] top-[30px]"></div>
         
         <!-- Info, Change Password and My Books -->
         <div class="w-[70%]">
@@ -50,6 +56,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { session } from '../data/session';
 import Header from '../assets/components/Header.vue';
 import Footer from '../assets/components/Footer.vue';
 import ProfileInfo from '../assets/components/ProfileInfo.vue';
@@ -127,6 +134,10 @@ async function createCheckoutSession() {
     checkoutUrl.value = data.message.url
     window.location.href = checkoutUrl.value
 
+}
+
+function handleLogout() {
+    session.logout.submit();
 }
 
 </script>
