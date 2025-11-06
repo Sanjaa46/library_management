@@ -4,7 +4,7 @@
         <div class="absolute w-1 h-12 bg-[#118ab2] left-0"></div>
         <h1 class="text-4xl font-bold pl-5 pt-2">Profile</h1>
     </div>
-    <section class="flex max-w-[1120px] h-[550px] mx-auto my-15">
+    <section class="flex max-w-[1120px] h-[60%] mx-auto my-15">
         <!-- Pro Image, Fullname and three buttons -->
         <div class=" w-[30%]">
             <a @click="current = 'ProfileInfo'">
