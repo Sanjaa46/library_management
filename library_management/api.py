@@ -109,25 +109,32 @@ def has_active_issue(user_email, book):
 
     return bool(exists)
 
-@frappe.whitelist(methods=["GET"], allow_guest=True)
-@require_auth
+@frappe.whitelist(allow_guest=False)
 def my_books():
-    user_email = frappe.local.user
+    user_email = frappe.session.user
     user = frappe.get_value("Library Member", {"email_address": user_email})
+    loan_period = frappe.db.get_single_value("Library Settings", "loan_period")
 
     books = frappe.get_all(
         "Library Transaction",
         filters={
             "type": "Issue",
+            "docstatus": 1,
             "library_member": user
         },
-        fields=["article"],
-        pluck='article'
+        fields=["article", "date"]
     )
+    
+    data = [
+        {
+            "article": b["article"],
+            "issue_date": b["date"],
+            "due_date": frappe.utils.add_to_date(b["date"], days=loan_period)
+        }
+        for b in books
+    ]
 
-    return {
-        "books": books
-    } 
+    return data
 
 @frappe.whitelist(methods=["GET"], allow_guest=False)
 def profile():

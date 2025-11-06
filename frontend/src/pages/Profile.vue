@@ -30,7 +30,7 @@
                 <button @click="current = 'ChangePassword'">
                     Change Password >
                 </button>
-                <button>
+                <button @click="current = 'MyBooks'">
                     My Books >
                 </button>
             </div>
@@ -53,11 +53,13 @@ import { ref, computed, onMounted } from 'vue';
 import Header from '../assets/components/Header.vue';
 import Footer from '../assets/components/Footer.vue';
 import ProfileInfo from '../assets/components/ProfileInfo.vue';
+import MyBooks from '../assets/components/MyBooks.vue';
 import ChangePassword from '../assets/components/ChangePassword.vue';
 
 const componentsMap = {
     ProfileInfo,
-    ChangePassword
+    ChangePassword,
+    MyBooks
 }
 
 const current = ref('ProfileInfo')
@@ -97,8 +99,7 @@ onMounted(async () => {
 
         first_name.value = data.message.first_name;
         last_name.value = data.message.last_name;
-        membership.value = false; // TODO library: Temporary value remove it
-        // membership.value = data.message.membership;
+        membership.value = data.message.membership;
 
         user.value = {
             id: data.message.id,
