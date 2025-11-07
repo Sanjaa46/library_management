@@ -1,6 +1,8 @@
 import frappe
 
 def check_overdue_books():
+    # loan_period = frappe.db.get_single_value("Library Settings", "loan_period")
+    # frappe.utils.add_to_date(b["date"], days=loan_period)
     overdue = frappe.get_all(
         "Library Transaction",
         filters={

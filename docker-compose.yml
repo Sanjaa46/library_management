@@ -142,6 +142,7 @@ services:
       - logs:/home/frappe/frappe-bench/logs
     ports:
       - "8080:8080"
+      - "5173:5173"
 
   queue-long:
     image: sanjaa/frappe-custom:v0.1
