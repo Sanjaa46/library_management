@@ -84,7 +84,7 @@ def issue_book(book):
 
     try:
         book_request = frappe.get_doc({
-            "doctype": "Book Request2",
+            "doctype": "Book Request",
             "article": book,
             "library_member": user,
             "status": "Requested"
@@ -191,7 +191,8 @@ def change_password(old_password, new_password):
     return {"Success": True, "message": "Password updated successfully!"}
 
 @frappe.whitelist(methods=['POST'], allow_guest=True)
-def forgot_password(email=None):
+def forgot_password():
+    email = frappe.session.user
     if not email:
         frappe.throw("Email is required!")
 
@@ -228,7 +229,7 @@ def forgot_password(email=None):
             company_logo="https://cdn-icons-png.flaticon.com/512/9043/9043296.png", # temporary logo
             company_name="LMS Library",
             user_name=recipient_name[0],
-            reset_url=f"http://frontend-url:3000/reset-password?token={new_reset_token}",
+            reset_url=f"http://localhost:8080/frontend/reset-password?token={new_reset_token}",
             expiration_time=1,
             current_year=frappe.utils.getdate().year,
             contact_email="temphomes880@gmail.com",
@@ -237,7 +238,7 @@ def forgot_password(email=None):
     )
     frappe.db.commit()
 
-    return {"Success": True, "message": "Password reset link sent!"}
+    return {"Success": True, "message": "Password reset link sent to your email!"}
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 def reset_password(token, new_password):

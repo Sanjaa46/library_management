@@ -22,6 +22,7 @@
             <!-- Buttons -->
             <div class="flex flex-col items-center space-y-3 mt-5">
                 <button 
+                v-if="!membership"
                     @click="createCheckoutSession"
                     :class='[" w-[215px] h-[35px] mt-5 bg-[#118ab2] hover:bg-[#016475] text-white-overlay-900 rounded-[10px]", buyButtonClasses]'
                 >

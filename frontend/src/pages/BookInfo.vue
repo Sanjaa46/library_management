@@ -27,6 +27,7 @@
                 {{ book.description }}
             </p>
             <Button 
+            v-if="!issueSuccess"
             @click="issueBook" 
             variant="solid" 
             :class='["bg-[#1290b9] w-[90px] text-white my-10 rounded hover:bg-[#016475] transition", issueButtonClasses]'
@@ -93,7 +94,7 @@ onMounted(async () => {
 
 const issueButtonClasses = computed(() => {
     return issueSuccess.value
-        ? "opacity-0"
+        ? "opacity-0 cursor-not-allowed"
         : "opacity-100"
 })
 

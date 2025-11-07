@@ -8,11 +8,11 @@ from frappe.model.document import Document
 class BookRequest(Document):
 	def before_insert(self):
 		exists = frappe.db.exists(
-			"Book Request2",
+			"Book Request",
 			{
 				"article": self.article,
 				"library_member": self.library_member,
-				"status": "Requested"
+				"docstatus": 0
 			}
 		)
 		if exists:
