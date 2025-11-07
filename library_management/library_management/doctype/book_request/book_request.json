@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2025-10-27 10:51:44.285979",
+ "creation": "2025-11-07 11:22:34.086068",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -17,7 +17,7 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "no_copy": 1,
-   "options": "Book Request2",
+   "options": "Book Request",
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
@@ -53,10 +53,10 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-10-27 11:34:12.899568",
+ "modified": "2025-11-07 11:43:19.567595",
  "modified_by": "Administrator",
  "module": "Library Management",
- "name": "Book Request2",
+ "name": "Book Request",
  "owner": "Administrator",
  "permissions": [
   {
@@ -70,33 +70,6 @@
    "role": "System Manager",
    "share": 1,
    "submit": 1,
-   "write": 1
-  },
-  {
-   "cancel": 1,
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Librarian",
-   "select": 1,
-   "share": 1,
-   "submit": 1,
-   "write": 1
-  },
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "Library Member",
-   "share": 1,
    "write": 1
   }
  ],

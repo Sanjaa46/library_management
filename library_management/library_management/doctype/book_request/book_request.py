@@ -5,7 +5,7 @@ import frappe
 from frappe.model.document import Document
 
 
-class BookRequest2(Document):
+class BookRequest(Document):
 	def before_insert(self):
 		exists = frappe.db.exists(
 			"Book Request2",
