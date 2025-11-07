@@ -38,6 +38,16 @@ const routes = [
 		path: "/frontend/membership-success",
 		component: () => import("@/pages/MembershipSuccess.vue"),
 	},
+	{
+		name: "ResetPassword",
+		path: "/frontend/reset-password",
+		component: () => import("@/pages/ResetPassword.vue"),
+	},
+	{
+		name: "ForgotPassword",
+		path: "/frontend/forgot-password",
+		component: () => import("@/pages/ForgotPassword.vue"),
+	},
 ]
 
 const router = createRouter({
@@ -58,12 +68,12 @@ router.beforeEach(async (to, from, next) => {
 	
 	
 	// If user is not logged in and tries to visit a protected page
-	if (!isLoggedIn && !["Login", "Signup"].includes(to.name)) {
+	if (!isLoggedIn && !["Login", "Signup", "ForgotPassword", "ResetPassword"].includes(to.name)) {
 		return next({ name: "Login" });
 	}
 
 	// If user is logged in and tries to visit Login or Signup
-	if (isLoggedIn && ["Login", "Signup"].includes(to.name)) {
+	if (isLoggedIn && ["Login", "Signup", "ForgotPassword", "ResetPassword"].includes(to.name)) {
 		return next({ name: "Home" });
 	}
 

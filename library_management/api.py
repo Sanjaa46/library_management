@@ -157,7 +157,6 @@ def profile():
             "to_date": (">", frappe.utils.nowdate()),
         },
     )
-    print("Membership: ", valid_membership)
     if not valid_membership:
         membership = False
     else:
@@ -190,9 +189,8 @@ def change_password(old_password, new_password):
 
     return {"Success": True, "message": "Password updated successfully!"}
 
-@frappe.whitelist(methods=['POST'], allow_guest=True)
-def forgot_password():
-    email = frappe.session.user
+@frappe.whitelist(allow_guest=True)
+def forgot_password(email=None):
     if not email:
         frappe.throw("Email is required!")
 
@@ -238,13 +236,37 @@ def forgot_password():
     )
     frappe.db.commit()
 
-    return {"Success": True, "message": "Password reset link sent to your email!"}
+    return {"success": True, "message": "Password reset link sent to your email!"}
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 def reset_password(token, new_password):
-    if not frappe.db.exists("User", {"reset_password_key": token}):
-        frappe.throw("Invalid link!")
+    verify_token = verify_reset_token(token)
+    print(verify_token["success"])
+    if verify_token["success"]:
 
+        user_email = frappe.get_all(
+            "User",
+            filters={"reset_password_key": token},
+            pluck="name"
+        )[0]
+
+        user = frappe.get_doc("User", user_email)
+        user.reset_password_key = None
+        user.save(ignore_permissions=True)
+
+        frappe.utils.password.update_password(user_email, new_password)
+        frappe.db.commit()
+
+        return {"success": True, "message": "Password reseted succesfully!"}
+    else:
+        return {"success": False, "message": verify_token["message"]}
+
+def verify_reset_token(token):
+    exists = frappe.db.exists("User", {"reset_password_key": token})
+
+    if not exists:
+        return {"success": False, "message": "Invalid URL or user not found!"}
+    
     user_email = frappe.get_all(
         "User",
         filters={"reset_password_key": token},
@@ -256,15 +278,9 @@ def reset_password(token, new_password):
     now = frappe.utils.now_datetime()
     time_diff = now - user.last_reset_password_key_generated_on
     if not time_diff.total_seconds() < 3600:
-        frappe.throw("Reset link expired!")
+        return {"success": False, "message": "Reset link expired!"}
 
-    user.reset_password_key = None
-    user.save(ignore_permissions=True)
-
-    frappe.utils.password.update_password(user_email, new_password)
-    frappe.db.commit()
-
-    return {"Success": True, "message": "Password reseted succesfully!"}
+    return {"success": True}
 
 @frappe.whitelist(methods=['POST'], allow_guest=False)
 def create_checkout_session():

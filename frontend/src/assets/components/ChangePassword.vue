@@ -28,9 +28,6 @@
         class="w-[300px]"
         placeholder="Re-enter new password"
         />
-        <div class="text-sm text-gray-500 cursor-pointer hover:underline">
-        Forgot password?
-        </div>
         <Button @click="handleChangePassword" variant="solid" class="bg-[#1290b9] text-white py-2 rounded hover:bg-[#016475] transition">
         Chnage Password
         </Button>
@@ -90,6 +87,5 @@ async function handleChangePassword() {
         alert('Change password failed. Please check console for details.')
     }
 }
-
 
 </script>
