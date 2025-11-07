@@ -1,5 +1,5 @@
 <template>
-    <footer class=" flex bg-[#2c3e50] w-full justify-center mt-10">
+    <footer class=" flex flex-col bg-[#2c3e50] w-full justify-center mt-10 bottom-0">
         <div class="flex justify-between w-[1120px] mx-auto py-8 relative">
             <div class="w-[30%]"> <!-- Logo and description -->
                 <img src="../images/logo.png" class="m-5" alt="footer logo">
@@ -29,10 +29,10 @@
             <button @click="scrollTop" class="absolute bottom-5 z-[999] right-[-100px] "><img src="../images/arrow.png" alt="arrow"></button>
         </div>
         
+        <div class=" w-full bg-[#118ab2] flex justify-center bottom-0">
+            <p class="text-sm">Copyright © 2025, library-example.com, All Rights Reserved</p>
+        </div>
     </footer>
-    <div class=" w-100% bg-[#118ab2] flex justify-center">
-        <p class="text-sm">Copyright © 2025, library-example.com, All Rights Reserved</p>
-    </div>
 </template>
 
 <script setup>

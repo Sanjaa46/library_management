@@ -19,9 +19,9 @@
             type="password"
             placeholder="Password"
           />
-          <div class="text-sm text-right text-gray-500 cursor-pointer hover:underline">
+          <a href="/frontend/forgot-password" class="text-sm text-right text-gray-500 cursor-pointer hover:underline">
             Forgot password?
-          </div>
+          </a>
           <Button :locading="session.login.loading" variant="solid" class="bg-[#007C91] text-white py-2 rounded hover:bg-[#006273] transition">
             Login
           </Button>

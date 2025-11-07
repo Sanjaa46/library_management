@@ -164,7 +164,6 @@ const fetchBooks = async () => {
             method: 'GET',
         });
         const data = await response.json()
-        console.log(data)
 
         books.value = data.message.results;
         total.value = data.message.total;

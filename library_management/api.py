@@ -56,8 +56,7 @@ def search(query=None, page=1, page_size=2):
         "total_pages": (total + page_size - 1) // page_size
     }
 
-@frappe.whitelist(methods=["GET"], allow_guest=True)
-@require_auth
+@frappe.whitelist(allow_guest=False)
 def book_info(article_name=None):
     if not article_name:
         frappe.throw("Enter book name!")
@@ -78,24 +77,30 @@ def book_info(article_name=None):
 
     return data
 
-@frappe.whitelist()
-def issue_book(user_email, book):
-    user = frappe.get_value("Library Member", {"email_address": user_email}, "name")
-
-    transaction = frappe.get_doc({
-        "doctype": "Library Transaction",
-        "article": book,
-        "library_member": user,
-        "type": "Issue",
-        "date": frappe.utils.nowdate()
-    })
-    transaction.insert(ignore_permissions=True)
-
-    return {"Seccess": True, "url": "http://library.localhost:8000/articles/rich-and-poor"}
-
-@frappe.whitelist()
-def has_active_issue(user_email, book):
+@frappe.whitelist(allow_guest=True)
+def issue_book(book):
+    user_email = frappe.session.user
     user = frappe.get_value("Library Member", {"email_address": user_email})
+
+    try:
+        book_request = frappe.get_doc({
+            "doctype": "Book Request",
+            "article": book,
+            "library_member": user,
+            "status": "Requested"
+        })
+        book_request.insert()
+        frappe.db.commit()
+    except Exception as e:
+        return {"success": False, "error": e}
+
+    return {"success": True}
+
+@frappe.whitelist()
+def has_active_issue(book):
+    user_email = frappe.session.user
+    user = frappe.get_value("Library Member", {"email_address": user_email})
+    loan_period = frappe.db.get_single_value("Library Settings", "loan_period")
 
     exists = frappe.db.exists(
         "Library Transaction",
@@ -103,68 +108,88 @@ def has_active_issue(user_email, book):
             "article": book,
             "library_member": user,
             "type": "Issue",
-            "docstatus": 0
+            "date": ("<=", frappe.utils.add_to_date(frappe.utils.nowdate(), days=loan_period)),
+            "docstatus": 1
         }
     )
 
     return bool(exists)
 
-@frappe.whitelist(methods=["GET"], allow_guest=True)
-@require_auth
+@frappe.whitelist(allow_guest=False)
 def my_books():
-    user_email = frappe.local.user
+    user_email = frappe.session.user
     user = frappe.get_value("Library Member", {"email_address": user_email})
+    loan_period = frappe.db.get_single_value("Library Settings", "loan_period")
 
     books = frappe.get_all(
         "Library Transaction",
         filters={
             "type": "Issue",
+            "docstatus": 1,
             "library_member": user
         },
-        fields=["article"],
-        pluck='article'
+        fields=["article", "date"]
     )
+    
+    data = [
+        {
+            "article": b["article"],
+            "issue_date": b["date"],
+            "due_date": frappe.utils.add_to_date(b["date"], days=loan_period)
+        }
+        for b in books
+    ]
 
-    return {
-        "books": books
-    } 
+    return data
 
-@frappe.whitelist(methods=["GET"], allow_guest=True)
-@require_auth
+@frappe.whitelist(methods=["GET"], allow_guest=False)
 def profile():
-    user_email = frappe.local.user
-    print(user_email)
+    user_email = frappe.session.user
 
     user = frappe.get_all("Library Member", filters={"email_address": user_email}, fields={"name", "first_name", "last_name", "phone", "email_address"})[0]
-    print(user)
+
+    valid_membership = frappe.db.exists(
+        "Library Membership",
+        {
+            "library_member": user["name"],
+            "docstatus": 1,
+            "from_date": ("=<", frappe.utils.nowdate()),
+            "to_date": (">", frappe.utils.nowdate()),
+        },
+    )
+    if not valid_membership:
+        membership = False
+    else:
+        membership = True
 
     data = {
         "id": user.name,
         "first_name": user.first_name,
         "last_name": user.last_name,
         "phone": user.phone,
-        "email": user.email_address
+        "email": user.email_address,
+        "membership": membership
     }
 
     return data
 
 @frappe.whitelist(methods=["PATCH"], allow_guest=True)
-@require_auth
 def change_password(old_password, new_password):
-    user_email = frappe.local.user
+    user_email = frappe.session.user
+    print(user_email)
 
     # change_password method raises an exception not boolean!
     try:
         frappe.utils.password.check_password(user_email, old_password)
     except:
-        frappe.throw("Old password is incorrect", frappe.AuthenticationError)
+        return {"success": False, "message": "Old password is incorrect"}
     
     
     frappe.utils.password.update_password(user_email, new_password)
 
     return {"Success": True, "message": "Password updated successfully!"}
 
-@frappe.whitelist(methods=['POST'], allow_guest=True)
+@frappe.whitelist(allow_guest=True)
 def forgot_password(email=None):
     if not email:
         frappe.throw("Email is required!")
@@ -202,7 +227,7 @@ def forgot_password(email=None):
             company_logo="https://cdn-icons-png.flaticon.com/512/9043/9043296.png", # temporary logo
             company_name="LMS Library",
             user_name=recipient_name[0],
-            reset_url=f"http://frontend-url:3000/reset-password?token={new_reset_token}",
+            reset_url=f"http://localhost:8080/frontend/reset-password?token={new_reset_token}",
             expiration_time=1,
             current_year=frappe.utils.getdate().year,
             contact_email="temphomes880@gmail.com",
@@ -211,13 +236,37 @@ def forgot_password(email=None):
     )
     frappe.db.commit()
 
-    return {"Success": True, "message": "Password reset link sent!"}
+    return {"success": True, "message": "Password reset link sent to your email!"}
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 def reset_password(token, new_password):
-    if not frappe.db.exists("User", {"reset_password_key": token}):
-        frappe.throw("Invalid link!")
+    verify_token = verify_reset_token(token)
+    print(verify_token["success"])
+    if verify_token["success"]:
 
+        user_email = frappe.get_all(
+            "User",
+            filters={"reset_password_key": token},
+            pluck="name"
+        )[0]
+
+        user = frappe.get_doc("User", user_email)
+        user.reset_password_key = None
+        user.save(ignore_permissions=True)
+
+        frappe.utils.password.update_password(user_email, new_password)
+        frappe.db.commit()
+
+        return {"success": True, "message": "Password reseted succesfully!"}
+    else:
+        return {"success": False, "message": verify_token["message"]}
+
+def verify_reset_token(token):
+    exists = frappe.db.exists("User", {"reset_password_key": token})
+
+    if not exists:
+        return {"success": False, "message": "Invalid URL or user not found!"}
+    
     user_email = frappe.get_all(
         "User",
         filters={"reset_password_key": token},
@@ -229,23 +278,16 @@ def reset_password(token, new_password):
     now = frappe.utils.now_datetime()
     time_diff = now - user.last_reset_password_key_generated_on
     if not time_diff.total_seconds() < 3600:
-        frappe.throw("Reset link expired!")
+        return {"success": False, "message": "Reset link expired!"}
 
-    user.reset_password_key = None
-    user.save(ignore_permissions=True)
+    return {"success": True}
 
-    frappe.utils.password.update_password(user_email, new_password)
-    frappe.db.commit()
-
-    return {"Success": True, "message": "Password reseted succesfully!"}
-
-@frappe.whitelist(methods=['POST'], allow_guest=True)
-@require_auth
+@frappe.whitelist(methods=['POST'], allow_guest=False)
 def create_checkout_session():
     site_config = frappe.get_site_config()
     stripe.api_key = site_config.get("stripe_secret_key")
 
-    user_email = frappe.local.user
+    user_email = frappe.session.user
     
 
     try:
@@ -302,11 +344,31 @@ def create_checkout_session():
             "quantity": 1,
         }],
         mode="payment",
-        success_url=f"{frappe.utils.get_url()}/membership-success?session_id={{CHECKOUT_SESSION_ID}}",
-        cancel_url=f"{frappe.utils.get_url()}/membership-cancel",
+        success_url=f"{frappe.utils.get_url()}/frontend/membership-success?session_id={{CHECKOUT_SESSION_ID}}",
+        cancel_url=f"{frappe.utils.get_url()}/frontend/membership-cancel",
     )
 
     return {"sessionId": session.id, "url": session.url}
+
+@frappe.whitelist(methods=["GET"], allow_guest=False)
+def verify_checkout_session(session_id=None):
+    if not session_id:
+        frappe.throw("Session ID is required!")
+    
+    site_config = frappe.get_site_config()
+    stripe.api_key = site_config.get("stripe_secret_key")
+
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+
+        return {
+            "verified": session.payment_status == "paid",
+            "session_id": session_id,
+            "payment_status": session.payment_status,
+        }
+    except Exception as e:
+        frappe.log_error(f"Error verifying session: {str(e)}")
+        return {"verified": False, "error": str(e)}
 
 @frappe.whitelist(allow_guest=True)
 def stripe_webhook():

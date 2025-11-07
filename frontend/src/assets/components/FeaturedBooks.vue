@@ -1,11 +1,11 @@
 <template>
-<section class="max-w-[1120px] mx-auto px-4 py-12">
+<section class=" max-w-[1120px] mx-auto px-4 py-12">
     <div class="w-[1120px] my-8 mx-auto text-[24px] font-bold relative">
         <div class="absolute w-1 h-12 bg-[#118ab2] left-0"></div>
         <h1 class="text-4xl font-bold pl-5 pt-2">Featured Books</h1>
     </div>
     
-    <Carousel v-bind="carouselConfig">
+    <Carousel v-bind="carouselConfig" class="">
       <Slide v-for="book in books" :key="book.article_name">
         <Article :book="book" />
       </Slide>
