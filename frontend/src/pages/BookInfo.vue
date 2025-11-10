@@ -85,7 +85,6 @@ onMounted(async () => {
             credentials: 'include'
         })
         const check_issue_data = await response.json();
-        console.log("Has active issue: ", check_issue_data.message)
         issueSuccess.value = check_issue_data.message
     } catch(error) {
         console.error("Failed to check the user have an active issue: ", error)
@@ -107,7 +106,6 @@ async function issueBook() {
             credentials: 'include'
         })
         const data = await response.json();
-        console.log("Issue book response: ", data.message)
         if (!data.message.success) {
             alert("You already requested this book!")
         }

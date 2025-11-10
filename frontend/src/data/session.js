@@ -30,7 +30,7 @@ export const session = reactive({
 			const userName = await getUserRoles();
 
 			if (userName === "Administrator" || userName === "librarian@example.com") {
-				router.replace("/app"); // Frappe Desk
+				router.replace("/app/build"); // Frappe Desk
 			} else {
 				router.replace("/frontend"); // Library Member UI
 			}

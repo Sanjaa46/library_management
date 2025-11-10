@@ -198,6 +198,10 @@ def profile():
 
     return data
 
+"""
+Endpoints for reset and forgot password
+"""
+
 @frappe.whitelist(methods=["PATCH"], allow_guest=True)
 def change_password(old_password, new_password):
     user_email = frappe.session.user
@@ -307,6 +311,33 @@ def verify_reset_token(token):
 
     return {"success": True}
 
+"""
+Endpoints for notification
+"""
+@frappe.whitelist(allow_guest=False)
+def get_notifications():
+    user_email = frappe.session.user
+    member_id = frappe.get_value("Library Member", {"email_address": user_email})
+
+    if not member_id:
+        return []
+
+    notifications = frappe.get_all("Library Notification", filters={"library_member": member_id}, fields=["name", "title", "message", "is_read"])
+    return notifications
+
+@frappe.whitelist(allow_guest=False)
+def mark_as_read(name):
+    if not frappe.db.exists("Library Notification", name):
+        return {"ok": False, "message": "Notification not found"}
+    
+    frappe.db.set_value("Library Notification", name, "is_read", True)
+    frappe.db.commit()
+    return {"ok": True, "message": "Marked as read"}
+
+
+"""
+Endpoints for Membership payment
+"""
 @frappe.whitelist(methods=['POST'], allow_guest=False)
 def create_checkout_session():
     site_config = frappe.get_site_config()

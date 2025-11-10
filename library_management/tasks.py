@@ -23,7 +23,7 @@ def check_overdue_books():
 
     for trx in overdue:
         if trx.article not in returned_articles:
-            print(trx)
+            create_overdue_notification(trx)
             frappe.enqueue(
                 method="library_management.tasks.send_overdue_email",
                 queue="short",
@@ -56,13 +56,32 @@ def send_overdue_email(transaction):
         message=message
     )
 
-overdue = frappe.get_all(
-        "Library Transaction",
-        filters={
-            "type": "Issue",
-            "date": ["<", frappe.utils.getdate()]
-        },
-        fields=["name", "article", "library_member", "date"]
-    )
 
-send_overdue_email(overdue[0])
+def create_overdue_notification(transaction):
+    loan_period = frappe.db.get_single_value("Library Settings", "loan_period")
+    now = frappe.utils.nowdate()
+    due_date = frappe.utils.add_days(now, -loan_period)
+    message = f"""
+    You have overdue book **{transaction.article}** was due on {due_date}.
+    Please return your book. 
+    """
+
+
+    exists = frappe.db.exists(
+            "Library Notification",
+            {
+                "library_transaction": transaction.name
+            },
+        )
+    if not exists:
+        notification = frappe.get_doc({
+            "doctype": "Library Notification",
+            "library_transaction": transaction.name,
+            "library_member": transaction.library_member,
+            "title": f"Over due book reminder",
+            "message":message,
+            "is_read": False,
+            "type": "overdue"
+        })
+        notification.insert(ignore_permissions=True)
+        frappe.db.commit()
