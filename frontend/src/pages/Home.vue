@@ -19,6 +19,7 @@
         </div>
     </div>
     <FeaturedBooks />
+    <Contact></Contact>
     <Footer></Footer>
 </template>
 
@@ -26,6 +27,6 @@
 import Header from '../assets/components/Header.vue';
 import Footer from '../assets/components/Footer.vue';
 import FeaturedBooks from '../assets/components/FeaturedBooks.vue';
-
+import Contact from '../assets/components/Contact.vue';
 
 </script>

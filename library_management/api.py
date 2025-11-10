@@ -334,6 +334,30 @@ def mark_as_read(name):
     frappe.db.commit()
     return {"ok": True, "message": "Marked as read"}
 
+"""
+Endpoints for contact us
+"""
+@frappe.whitelist(allow_guest=False)
+def send_message(first_name=None, last_name=None, email_address=None, message=None):
+    
+    if not first_name or not last_name or not email_address or not message:
+        return {"success": False, "message": "All fields are required!"}
+
+    try:
+        frappe.get_doc({
+            "doctype": "Contact Message",
+            "email_address": email_address,
+            "first_name": first_name,
+            "last_name": last_name,
+            "message": message,
+            "responded": False
+        }).insert()
+        frappe.db.commit()
+    except Exception as e:
+        return {"success": False, "message": f"Failed to send message. {e}"}
+
+    return {"success": True, "message": "Message sent successfully!"}
+
 
 """
 Endpoints for Membership payment

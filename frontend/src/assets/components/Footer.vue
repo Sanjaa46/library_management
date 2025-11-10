@@ -23,6 +23,7 @@
                         <router-link to="/frontend/search">
                             <li>Books</li>
                         </router-link>
+                        <li><a href="#contact-us">Contact Us</a></li>
                     </ul>
                 </div>
             </div>
