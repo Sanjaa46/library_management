@@ -2,7 +2,9 @@
     <footer class=" flex flex-col bg-[#2c3e50] w-full justify-center mt-10 bottom-0">
         <div class="flex justify-between w-[1120px] mx-auto py-8 relative">
             <div class="w-[30%]"> <!-- Logo and description -->
-                <img src="../images/logo.png" class="m-5" alt="footer logo">
+                <router-link to="/frontend" class="flex items-center space-x-2">
+                    <img src="../images/logo.png" class="m-5" alt="footer logo">
+                </router-link>
                 <p class="w-[400px]">Энэхүү систем нь энгийн номын сангийн удирдлагын систем бөгөөд номын санч болон уншигчдад (Library Member) зориулсан.</p>
                 <div class="w-[150px] py-5 flex place-content-between">
                     <a href=""><img src="../images/email.png" alt="email icon"></a>

@@ -31,16 +31,17 @@ class ContactMessage(Document):
 
 		library_member = frappe.get_value("Library Member", {"email_address": self.email_address})
 
-		notification = frappe.get_doc({
-			"doctype": "Library Notification",
-			"library_transaction": "",
-			"library_member": library_member,
-			"title": "Message response sent.",
-			"message": "Librarian has responded to your please message check your email.",
-			"is_read": False,
-			"type": "response"
-		})
-		notification.insert(ignore_permissions=True)
+		if library_member:
+			notification = frappe.get_doc({
+				"doctype": "Library Notification",
+				"library_transaction": "",
+				"library_member": library_member,
+				"title": "Message response sent.",
+				"message": "Librarian has responded to your please message please check your email.",
+				"is_read": False,
+				"type": "response"
+			})
+			notification.insert(ignore_permissions=True)
 
 		frappe.db.commit()
 
