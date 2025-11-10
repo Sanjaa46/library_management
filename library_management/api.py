@@ -99,37 +99,22 @@ def issue_book(book):
 @frappe.whitelist()
 def has_active_issue(book):
     user_email = frappe.session.user
-    user = frappe.get_value("Library Member", {"email_address": user_email})
-    loan_period = frappe.db.get_single_value("Library Settings", "loan_period")
+    member_id = frappe.get_value("Library Member", {"email_address": user_email})
+    books_list = borrowed_books_list(member_id)
 
-    exists = frappe.db.exists(
-        "Library Transaction",
-        {
-            "article": book,
-            "library_member": user,
-            "type": "Issue",
-            "date": ("<=", frappe.utils.add_to_date(frappe.utils.nowdate(), days=loan_period)),
-            "docstatus": 1
-        }
-    )
-
-    return bool(exists)
+    for borrowed_book in books_list:
+        if borrowed_book["article"] == book:
+            return True
+    
+    return False
 
 @frappe.whitelist(allow_guest=False)
 def my_books():
     user_email = frappe.session.user
-    user = frappe.get_value("Library Member", {"email_address": user_email})
+    member_id = frappe.get_value("Library Member", {"email_address": user_email})
     loan_period = frappe.db.get_single_value("Library Settings", "loan_period")
 
-    books = frappe.get_all(
-        "Library Transaction",
-        filters={
-            "type": "Issue",
-            "docstatus": 1,
-            "library_member": user
-        },
-        fields=["article", "date"]
-    )
+    my_books = borrowed_books_list(member_id)
     
     data = [
         {
@@ -137,10 +122,50 @@ def my_books():
             "issue_date": b["date"],
             "due_date": frappe.utils.add_to_date(b["date"], days=loan_period)
         }
-        for b in books
+        for b in my_books
     ]
 
     return data
+
+def borrowed_books_list(member_id):
+    # Get all transactions with article and date
+    transactions = frappe.get_all(
+        "Library Transaction", 
+        filters={"library_member": member_id, "docstatus": 1}, 
+        fields=["article", "date", "type"]
+    )
+    
+    my_books = []
+    # Group by article to find currently borrowed books
+    articles = set(t["article"] for t in transactions)
+    
+    for article in articles:
+        issue_count = frappe.db.count("Library Transaction", {
+            "article": article, 
+            "library_member": member_id,
+            "type": "issue"
+        })
+        return_count = frappe.db.count("Library Transaction", {
+            "article": article,
+            "library_member": member_id, 
+            "type": "return"
+        })
+        
+        if return_count < issue_count:
+            # Get the latest issue date for this article
+            latest_issue = frappe.get_value(
+                "Library Transaction",
+                {
+                    "article": article,
+                    "library_member": member_id,
+                    "type": "issue"
+                },
+                "date",
+                order_by="date desc"
+            )
+            my_books.append({"article": article, "date": latest_issue})
+    
+    return my_books
 
 @frappe.whitelist(methods=["GET"], allow_guest=False)
 def profile():

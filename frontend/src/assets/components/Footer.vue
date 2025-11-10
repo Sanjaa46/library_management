@@ -3,7 +3,7 @@
         <div class="flex justify-between w-[1120px] mx-auto py-8 relative">
             <div class="w-[30%]"> <!-- Logo and description -->
                 <img src="../images/logo.png" class="m-5" alt="footer logo">
-                <p class="w-[400px]">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                <p class="w-[400px]">Энэхүү систем нь энгийн номын сангийн удирдлагын систем бөгөөд номын санч болон уншигчдад (Library Member) зориулсан.</p>
                 <div class="w-[150px] py-5 flex place-content-between">
                     <a href=""><img src="../images/email.png" alt="email icon"></a>
                     <img src="../images/facebook.png" alt="facebook icon">

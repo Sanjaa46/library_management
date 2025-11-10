@@ -1,23 +1,36 @@
 import frappe
 
 def check_overdue_books():
+    loan_period = frappe.db.get_single_value("Library Settings", "loan_period")
+    now = frappe.utils.nowdate()
+    due_date = frappe.utils.add_days(now, -loan_period)
     overdue = frappe.get_all(
         "Library Transaction",
         filters={
             "type": "Issue",
-            "date": ["<", frappe.utils.getdate()]
+            "docstatus": 1,
+            "date": ["<", due_date]
         },
         fields=["name", "article", "library_member", "date"]
     )
 
+    return_transactions = frappe.get_all(
+        "Library Transaction",
+        filters={"type": "Return", "docstatus": 1},
+        fields=["article"]
+    )
+    returned_articles = {trx.article for trx in return_transactions}
+
     for trx in overdue:
-        frappe.enqueue(
-            method="library_management.tasks.send_overdue_email",
-            queue="short",
-            timeout=60,
-            enqueue_after_commit=True,
-            transaction=trx
-        )
+        if trx.article not in returned_articles:
+            print(trx)
+            frappe.enqueue(
+                method="library_management.tasks.send_overdue_email",
+                queue="short",
+                timeout=60,
+                enqueue_after_commit=True,
+                transaction=trx
+            )
 
 
 
