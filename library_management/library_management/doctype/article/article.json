@@ -17,7 +17,8 @@
   "image",
   "section_break_sept",
   "route",
-  "published"
+  "published",
+  "rating"
  ],
  "fields": [
   {
@@ -78,6 +79,12 @@
    "label": "Article Name",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "rating",
+   "fieldtype": "Float",
+   "label": "Rating",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
@@ -85,7 +92,7 @@
  "index_web_pages_for_search": 1,
  "is_published_field": "published",
  "links": [],
- "modified": "2025-10-27 15:09:18.464422",
+ "modified": "2025-11-11 11:03:09.116127",
  "modified_by": "Administrator",
  "module": "Library Management",
  "name": "Article",

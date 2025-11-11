@@ -1,45 +1,49 @@
 <template>
-<Header></Header>
-<div class="h-[810px] ">
-    <div class="w-[1120px] my-8 mx-auto text-[24px] font-bold relative">
-        <div class="absolute w-1 h-12 bg-[#118ab2] left-0"></div>
-        <h1 class="text-4xl font-bold pl-5 pt-2">Book Info</h1>
-    </div>
-
-    <section  class="flex w-[1120px] p-[30px] mx-auto my-10">
-        <!-- Book image and Author -->
-        <div class="flex flex-col w-[20%] items-center justify-center">
-            <img :src="book.image" class="w-[200px] h-[300px] object-contain rounded-[5px]" alt="book image">
-            <p class="text-center mt-5">{{ book.author }}</p>
+    <Header></Header>
+    <div class="">
+        <div class="w-[1120px] my-8 mx-auto text-[24px] font-bold relative">
+            <div class="absolute w-1 h-12 bg-[#118ab2] left-0"></div>
+            <h1 class="text-4xl font-bold pl-5 pt-2">Book Info</h1>
         </div>
 
-        <!-- Book information -->
-        <div class="w-[80%] ml-10">
-            <h1 class="text-[25px] font-medium">{{ book.article_name }}</h1>
-            <div class="flex my-5 space-x-5 text-[15px]">
-                <p><b>Author: </b>{{ book.author }}</p>
-                <p><b>Publisher: </b>{{ book.publisher }}</p>
-                <p><b>ISBN: </b>{{ book.isbn }}</p>
-                <p><b>Status: </b>{{ book.status }}</p>
+        <section  class="flex w-[1120px] p-[30px] mx-auto my-10">
+            <!-- Book image and Author -->
+            <div class="flex flex-col w-[20%] items-center justify-center">
+                <img :src="book.image" class="w-[200px] h-[300px] object-contain rounded-[5px]" alt="book image">
+                <p class="text-center mt-5">{{ book.author }}</p>
+                <rate :length="5" v-model="articleRating" :disabled="true" :readonly="true" :showcount="true" class="color-black text-center  opacity-[100%]" />
             </div>
-            <h1 class="text-[18px] font-medium">Description</h1>
-            <p>
-                {{ book.description }}
-            </p>
-            <Button 
-            v-if="!issueSuccess"
-            @click="issueBook" 
-            variant="solid" 
-            :class='["bg-[#1290b9] w-[90px] text-white my-10 rounded hover:bg-[#016475] transition", issueButtonClasses]'
-            >
-            Issue
-            </Button>
-        </div>
+
+            <!-- Book information -->
+            <div class="w-[80%] ml-10">
+                <h1 class="text-[25px] font-medium">{{ book.article_name }}</h1>
+                <div class="flex my-5 space-x-5 text-[15px]">
+                    <p><b>Author: </b>{{ book.author }}</p>
+                    <p><b>Publisher: </b>{{ book.publisher }}</p>
+                    <p><b>ISBN: </b>{{ book.isbn }}</p>
+                    <p><b>Status: </b>{{ book.status }}</p>
+                </div>
+                <h1 class="text-[18px] font-medium">Description</h1>
+                <p>
+                    {{ book.description }}
+                </p>
+                <Button 
+                v-if="!issueSuccess"
+                @click="issueBook" 
+                variant="solid" 
+                :class='["bg-[#1290b9] w-[90px] text-white my-10 rounded hover:bg-[#016475] transition", issueButtonClasses]'
+                >
+                Issue
+                </Button>
+            </div>
+        </section>
+    </div>
+    <section class="w-[1120px] h-[250px] flex m-auto">
+        <Reviews v-if="reviews.length > 0" v-for="review in reviews" :review="review"/>
     </section>
-</div>
 
 
-<Footer></Footer>
+    <Footer></Footer>
 </template>
 
 
@@ -48,12 +52,16 @@ import Header from '../assets/components/Header.vue';
 import Footer from '../assets/components/Footer.vue';
 import { defineProps, ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import Reviews from '../assets/components/Reviews.vue';
+
 
 const route = useRoute();
 
 const book = ref({})
 const articleName = ref("")
 const issueSuccess = ref(false)
+const articleRating = ref(0)
+const reviews = ref([])
 
 onMounted(async () => {
     articleName.value = route.query.article_name;
@@ -72,6 +80,8 @@ onMounted(async () => {
         const data = await response.json()
 
         book.value = data.message
+        articleRating.value = parseInt(data.message.rating)
+        console.log(articleRating.value)
     }
     catch (error) {
         console.error("Failed to fetch books: ", error);
@@ -88,6 +98,21 @@ onMounted(async () => {
         issueSuccess.value = check_issue_data.message
     } catch(error) {
         console.error("Failed to check the user have an active issue: ", error)
+    }
+
+    // Get reviews
+    try {
+        const url = `/api/method/library_management.api.get_reviews?book=${articleName.value}`
+
+        const response = await fetch(url, {
+            credentials: 'include',
+            method: 'POST'
+        })
+        const data = await response.json();
+
+        reviews.value = data.message;
+    } catch(error) {
+        console.error("Failed to fetch book reviews: ", error)
     }
 })
 

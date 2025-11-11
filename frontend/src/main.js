@@ -1,5 +1,8 @@
 import { createApp } from "vue"
 
+import rate from 'vue-rate'
+import 'vue-rate/dist/vue-rate.css'
+
 import App from "./App.vue"
 import router from "./router"
 import { initSocket } from "./socket"
@@ -32,7 +35,7 @@ const globalComponents = {
 	Badge,
 }
 
-const app = createApp(App)
+const app = createApp(App).use(rate)
 
 setConfig("resourceFetcher", frappeRequest)
 

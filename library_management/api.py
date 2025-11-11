@@ -69,7 +69,9 @@ def book_info(article_name=None):
     data = {
         "article_name": book.article_name,
         "author": book.author,
+        "publisher": book.publisher,
         "description": book.description,
+        "rating": book.rating,
         "isbn": book.isbn,
         "status": book.status,
         "image": book.image
@@ -358,6 +360,69 @@ def send_message(first_name=None, last_name=None, email_address=None, message=No
 
     return {"success": True, "message": "Message sent successfully!"}
 
+
+"""
+Endpoints for rating book
+"""
+@frappe.whitelist(allow_guest=False)
+def write_review(book=None, rating=None, review=None):
+    if not book or not rating:
+        return {"success": False, "message": "Book name or rating field is missing!"}
+    
+    if rating > 5 or rating < 0:
+        return {"success": False, "message": "Rating must be integer and between 1 to 5!"}
+    
+    user_email = frappe.session.user
+    member_id = frappe.get_value("Library Member", {"email_address": user_email})
+    
+    try:
+        article_rating = frappe.get_doc({
+            "doctype": "Article Rating",
+            "article": book,
+            "library_member": member_id,
+            "rating": rating,
+            "review": review
+        })
+        article_rating.save()
+    except Exception as e:
+        return {"success": False, "message": f"Failed to create review {str(e)}"}
+    
+    frappe.db.commit()
+
+    return {"success": True, "message": "Write review successfully."}
+
+@frappe.whitelist(allow_guest=False)
+def delete_review():
+    user_email = frappe.session.user
+    member_id = frappe.get_value("Library Member", {"email_address": user_email})
+    review = frappe.get_value("Article Rating", {"library_member": member_id})
+
+    try:
+        frappe.delete_doc("Article Rating", review)
+    except Exception as e:
+        return {"success": False, "message": f"Failed to delete review. {str(e)}"}
+    
+    frappe.db.commit()
+    return {"success": True, "message": "Review deleted successfully."}
+
+@frappe.whitelist(allow_guest=False)
+def get_reviews(book=None, count=3):
+    if not book:
+        return {"success": False, "message": "Book field is missing!"}
+    
+    count = int(count)
+
+    reviews = frappe.db.get_all(
+        "Article Rating",
+        filters={"article": book},
+        fields=["library_member", "rating", "review"],
+        limit_start=0,
+        limit_page_length=count
+    )
+
+    return reviews
+    
+    
 
 """
 Endpoints for Membership payment
