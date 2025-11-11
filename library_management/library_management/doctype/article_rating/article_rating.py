@@ -36,4 +36,4 @@ class ArticleRating(Document):
 		avg = total / count if count else 0
 
 		article.rating = avg
-		article.save()
+		article.save(ignore_permissions=True)

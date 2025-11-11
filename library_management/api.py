@@ -366,11 +366,16 @@ Endpoints for rating book
 """
 @frappe.whitelist(allow_guest=False)
 def write_review(book=None, rating=None, review=None):
+    try:
+        rating = int(rating)
+    except ValueError:
+        return {"success": False, "message": "Rating must be an integer."}
+    
     if not book or not rating:
         return {"success": False, "message": "Book name or rating field is missing!"}
     
-    if rating > 5 or rating < 0:
-        return {"success": False, "message": "Rating must be integer and between 1 to 5!"}
+    if rating < 1 or rating > 5:
+        return {"success": False, "message": "Rating must be between 1 and 5."}
     
     user_email = frappe.session.user
     member_id = frappe.get_value("Library Member", {"email_address": user_email})
@@ -383,11 +388,11 @@ def write_review(book=None, rating=None, review=None):
             "rating": rating,
             "review": review
         })
-        article_rating.save()
+        article_rating.insert()
     except Exception as e:
-        return {"success": False, "message": f"Failed to create review {str(e)}"}
+        frappe.throw(f"Failed to create review: {str(e)}")
+        return {"success": False, "message": "Failed to create review"}
     
-    frappe.db.commit()
 
     return {"success": True, "message": "Write review successfully."}
 

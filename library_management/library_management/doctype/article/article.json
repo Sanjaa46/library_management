@@ -83,6 +83,7 @@
   {
    "fieldname": "rating",
    "fieldtype": "Float",
+   "ignore_user_permissions": 1,
    "label": "Rating",
    "read_only": 1
   }
@@ -92,7 +93,7 @@
  "index_web_pages_for_search": 1,
  "is_published_field": "published",
  "links": [],
- "modified": "2025-11-11 11:03:09.116127",
+ "modified": "2025-11-11 13:56:12.232244",
  "modified_by": "Administrator",
  "module": "Library Management",
  "name": "Article",

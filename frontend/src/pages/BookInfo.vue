@@ -35,15 +35,48 @@
                 >
                 Issue
                 </Button>
+                <!-- Write review -->
+                <Button 
+                @click="writeReview" 
+                variant="solid" 
+                class="bg-[#1290b9] text-white my-10 rounded hover:bg-[#016475] transition"
+                >
+                Write Review
+                </Button>
             </div>
         </section>
     </div>
     <section class="w-[1120px] h-[250px] flex m-auto">
         <Reviews v-if="reviews.length > 0" v-for="review in reviews" :review="review"/>
     </section>
-
-
+        
     <Footer></Footer>
+        
+    <div v-if="popup" class="absolute w-screen top-0 h-full bg-black-overlay-300">
+        <div class="flex w-full h-full justify-center items-center">
+            <Card title="Write Review!" class="w-[50%]  bg-[#f7f4f0] z-10 px-12 py-10 rounded-xl shadow-lg">
+                <h2 class="text-xl font-medium text-center mb-8">Write Review</h2>
+                <form class="flex flex-col space-y-5 w-full " @submit.prevent="">
+                    <rate :length="5" v-model="customerRating" :showcount="true" class="text-center" />
+                    <textarea
+                        required
+                        v-model="customerReview"
+                        name="review"
+                        placeholder="Review..."
+                        class="h-[200px]"
+                    ></textarea>
+                    <div class="w-full space-x-5 m-auto ">
+                        <Button variant="solid" @click="sendReview" class="bg-[#007C91] w-[45%] m-auto text-white py-2 rounded hover:bg-[#006273] transition">
+                            Write Review
+                        </Button>
+                        <Button @click="cancelWriteReview" variant="solid" class="bg-[#007C91] w-[45%] m-auto text-white py-2 rounded hover:bg-[#006273] transition">
+                            Cancel
+                        </Button>
+                    </div>
+                </form>
+            </Card>
+      </div>
+    </div>
 </template>
 
 
@@ -62,6 +95,11 @@ const articleName = ref("")
 const issueSuccess = ref(false)
 const articleRating = ref(0)
 const reviews = ref([])
+const popup = ref(false)
+
+// Variables for write review popup
+const customerReview = ref("");
+const customerRating = ref(0)
 
 onMounted(async () => {
     articleName.value = route.query.article_name;
@@ -81,7 +119,6 @@ onMounted(async () => {
 
         book.value = data.message
         articleRating.value = parseInt(data.message.rating)
-        console.log(articleRating.value)
     }
     catch (error) {
         console.error("Failed to fetch books: ", error);
@@ -137,6 +174,43 @@ async function issueBook() {
     } catch(error) {
         console.error("Failed to issue the book: ", error)
         issueSuccess.value = false;
+    }
+}
+
+function writeReview() {
+    popup.value = !popup.value
+}
+
+function cancelWriteReview() {
+    popup.value = !popup.value;
+    customerRating.value = 0;
+    customerReview.value = "";
+}
+
+async function sendReview() {
+    
+    try {
+        const url = `/api/method/library_management.api.write_review?book=${articleName.value}&rating=${customerRating.value}&review=${customerReview.value}`
+
+        const response = await fetch(url, {
+            credentials: 'include',
+            method: 'POST'
+        })
+
+        const data = await response.json();
+        console.log("Response: ", data.message)
+
+        if(data.message.success) {
+            alert(data.message.message)
+            popup.value = !popup.value
+        } else {
+            alert(data.message.message)
+            popup.value = !popup.value
+        }
+    } catch(error) {
+        console.error("Failed to write review. ", error)
+        alert("Failed to write review!")
+        popup.value = !popup.value
     }
 }
 
