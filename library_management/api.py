@@ -2,6 +2,7 @@ import stripe
 import frappe
 from frappe import _
 from .auth import require_auth
+from frappe import publish_realtime
 
 @frappe.whitelist(methods=["GET"], allow_guest=False)
 def get_library_stats():
@@ -391,8 +392,15 @@ def write_review(book=None, rating=None, review=None):
         article_rating.insert()
     except Exception as e:
         frappe.throw(f"Failed to create review: {str(e)}")
+        frappe.log_error("failed", frappe.get_traceback())
         return {"success": False, "message": "Failed to create review"}
     
+    # frappe.publish_realtime('write_review', message={'name': article_rating.name})
+    # frappe.publish_realtime(
+    #     event='new_review',
+    #     message={'book': book, 'rating': rating, 'review': review, 'library_member': member_id},
+    #     after_commit=True
+    # )
 
     return {"success": True, "message": "Write review successfully."}
 
@@ -422,7 +430,8 @@ def get_reviews(book=None, count=3):
         filters={"article": book},
         fields=["library_member", "rating", "review"],
         limit_start=0,
-        limit_page_length=count
+        limit_page_length=count,
+        order_by="creation desc"
     )
 
     return reviews

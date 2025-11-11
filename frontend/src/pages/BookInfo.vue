@@ -83,7 +83,8 @@
 <script setup>
 import Header from '../assets/components/Header.vue';
 import Footer from '../assets/components/Footer.vue';
-import { defineProps, ref, onMounted, computed } from 'vue';
+import { inject, defineProps, ref, onMounted, computed, watch } from 'vue';
+import { io } from 'socket.io-client'
 import { useRoute } from 'vue-router';
 import Reviews from '../assets/components/Reviews.vue';
 
@@ -103,6 +104,7 @@ const customerRating = ref(0)
 
 onMounted(async () => {
     articleName.value = route.query.article_name;
+    const socket = inject('socket')
 
     const url = `/api/method/library_management.api.book_info?article_name=${articleName.value}`
 
@@ -137,20 +139,23 @@ onMounted(async () => {
         console.error("Failed to check the user have an active issue: ", error)
     }
 
-    // Get reviews
-    try {
-        const url = `/api/method/library_management.api.get_reviews?book=${articleName.value}`
-
-        const response = await fetch(url, {
-            credentials: 'include',
-            method: 'POST'
-        })
-        const data = await response.json();
-
-        reviews.value = data.message;
-    } catch(error) {
-        console.error("Failed to fetch book reviews: ", error)
-    }
+    await fetchBookReviews()
+    
+    socket.on('new_review', (data) => {
+        console.log('New review event received:', data);
+        
+        if (data.book === articleName.value) {
+            console.log('New review for current book:', data);
+            
+            // Add the new review to the top of the list
+            reviews.value.unshift({
+                library_member: data.library_member,
+                rating: data.rating,
+                review: data.review,
+                name: data.name
+            });
+        }
+    });
 })
 
 const issueButtonClasses = computed(() => {
@@ -198,10 +203,8 @@ async function sendReview() {
         })
 
         const data = await response.json();
-        console.log("Response: ", data.message)
 
         if(data.message.success) {
-            alert(data.message.message)
             popup.value = !popup.value
         } else {
             alert(data.message.message)
@@ -211,6 +214,23 @@ async function sendReview() {
         console.error("Failed to write review. ", error)
         alert("Failed to write review!")
         popup.value = !popup.value
+    }
+}
+
+async function fetchBookReviews() {
+ // Get reviews
+    try {
+        const url = `/api/method/library_management.api.get_reviews?book=${articleName.value}`
+
+        const response = await fetch(url, {
+            credentials: 'include',
+            method: 'POST'
+        })
+        const data = await response.json();
+
+        reviews.value = data.message;
+    } catch(error) {
+        console.error("Failed to fetch book reviews: ", error)
     }
 }
 

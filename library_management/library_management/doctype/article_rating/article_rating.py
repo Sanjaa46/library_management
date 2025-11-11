@@ -19,8 +19,15 @@ class ArticleRating(Document):
 		if exists:
 			frappe.throw("You already wrote review on this book!")
 
+
+
 	def after_insert(self):
 		self.compute_rating()
+
+		frappe.publish_realtime(
+			'new_review',
+			{'book': self.article, 'rating': self.rating, 'review': self.review, 'library_member': self.library_member}
+		)
 
 	def after_delete(self):
 		self.compute_rating()
@@ -30,10 +37,11 @@ class ArticleRating(Document):
 		article = frappe.get_doc("Article", self.article)
 		print(article)
 		all_ratings = frappe.get_all("Article Rating", filters={"article": self.article}, fields=["rating"])
-		count = frappe.db.count("Article Rating", {"article": self.article})
+		count = len(all_ratings)
 
 		total = sum(int(r["rating"]) for r in all_ratings)
 		avg = total / count if count else 0
 
 		article.rating = avg
 		article.save(ignore_permissions=True)
+	
