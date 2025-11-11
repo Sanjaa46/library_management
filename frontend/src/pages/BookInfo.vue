@@ -84,7 +84,6 @@
 import Header from '../assets/components/Header.vue';
 import Footer from '../assets/components/Footer.vue';
 import { inject, defineProps, ref, onMounted, computed, watch } from 'vue';
-import { io } from 'socket.io-client'
 import { useRoute } from 'vue-router';
 import Reviews from '../assets/components/Reviews.vue';
 

@@ -80,7 +80,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { inject, ref, watch, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
@@ -126,7 +126,21 @@ async function markAsRead(name) {
 }
 
 onMounted(() => {
-  fetchNotifications()
+    const socket = inject('socket');
+
+    fetchNotifications()
+
+    socket.on('new_notification', (data) => {
+        console.log('New notification event received:', data);
+        
+        // Add the new review to the top of the list
+        notifications.value.unshift({
+            name: data.name,
+            title: data.title,
+            message: data.message
+        });
+        unreadCount.value++
+    });
 })
 
 // Initialize query from URL if on search page

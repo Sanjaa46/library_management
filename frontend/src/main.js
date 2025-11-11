@@ -53,10 +53,6 @@ socket.on("connect", () => {
 	console.log("Connected!")
 })
 
-socket.on('event_name', (data) => {
-	console.log("test_event received:", data);
-});
-
 
 for (const key in globalComponents) {
 	app.component(key, globalComponents[key])
