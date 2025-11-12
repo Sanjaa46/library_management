@@ -221,6 +221,7 @@ def change_password(old_password, new_password):
 
     return {"Success": True, "message": "Password updated successfully!"}
 
+# cache
 @frappe.whitelist(allow_guest=True)
 def forgot_password(email=None):
     if not email:
@@ -337,6 +338,29 @@ def mark_as_read(name):
     frappe.db.commit()
     return {"ok": True, "message": "Marked as read"}
 
+@frappe.whitelist(allow_guest=False)
+def delete_all_read():
+    user_email = frappe.session.user
+    member_id = frappe.get_value("Library Member", {"email_address": user_email})
+
+    if not member_id:
+        return {"success": False, "message": "User not found!"}
+
+    try:
+        frappe.db.delete("Library Notification", {
+            "library_member": member_id,
+            "is_read": 1
+        })
+
+        frappe.db.commit()
+
+        return {"success": True, "message": "Notifications deleted successfully."}
+    except Exception as e:
+        frappe.log_error(message=str(e), title="Delete Notifications Error")
+        return {"success": False, "message": "Failed to delete notifications!"}
+
+
+
 """
 Endpoints for contact us
 """
@@ -394,13 +418,6 @@ def write_review(book=None, rating=None, review=None):
         frappe.throw(f"Failed to create review: {str(e)}")
         frappe.log_error("failed", frappe.get_traceback())
         return {"success": False, "message": "Failed to create review"}
-    
-    # frappe.publish_realtime('write_review', message={'name': article_rating.name})
-    # frappe.publish_realtime(
-    #     event='new_review',
-    #     message={'book': book, 'rating': rating, 'review': review, 'library_member': member_id},
-    #     after_commit=True
-    # )
 
     return {"success": True, "message": "Write review successfully."}
 

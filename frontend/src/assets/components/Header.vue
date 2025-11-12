@@ -57,7 +57,7 @@
             </button>
 
             <!-- Dropdown -->
-            <div v-if="dropdownOpen" class="absolute right-[-10px] mt-2 w-64 bg-white text-black rounded-lg shadow-lg z-10">
+            <div v-if="dropdownOpen" class="absolute right-[-10px] mt-2 w-64 bg-white text-black rounded-lg shadow-xl z-10">
                 <ul>
                     <li v-for="n in notifications" :key="n.name"
                         @click="markAsRead(n.name)"
@@ -67,6 +67,9 @@
                         <p class="text-xs text-gray-600">{{ n.message }}</p>
                     </li>
                 </ul>
+                <div v-if="notifications.length > 0" class="flex w-full relative justify-end ">
+                    <button @click="handleNotificationDelete" class=" bg-red-500 p-1 m-1 rounded-[5px] text-sm">Delete all read</button>
+                </div>
             </div>
         </div>
 
@@ -181,6 +184,24 @@ function handleSearch() {
                 page: 1
             }
         });
+    }
+}
+
+async function handleNotificationDelete() {
+    try {
+        const url = `/api/method/library_management.api.delete_all_read`;
+
+        const response = await fetch(url, {
+            credentials: 'include'
+        })
+        const data = await response.json();
+
+        if(data.message.success) {
+            console.log("Notifications deleted.")
+        }
+    } catch(error) {
+        console.error("Failed to delete notifications: ", error)
+        alert("Failed to delete notifications!")
     }
 }
 </script>

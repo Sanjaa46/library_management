@@ -39,7 +39,7 @@
                 <Button 
                 @click="writeReview" 
                 variant="solid" 
-                class="bg-[#1290b9] text-white my-10 rounded hover:bg-[#016475] transition"
+                class="bg-[#1290b9] text-white my-10 mx-5 rounded hover:bg-[#016475] transition"
                 >
                 Write Review
                 </Button>
@@ -141,12 +141,7 @@ onMounted(async () => {
     await fetchBookReviews()
     
     socket.on('new_review', (data) => {
-        console.log('New review event received:', data);
-        
         if (data.book === articleName.value) {
-            console.log('New review for current book:', data);
-            
-            // Add the new review to the top of the list
             reviews.value.unshift({
                 library_member: data.library_member,
                 rating: data.rating,
