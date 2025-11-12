@@ -2,6 +2,7 @@ import stripe
 import frappe
 from frappe import _
 from .auth import require_auth
+from frappe import publish_realtime
 
 @frappe.whitelist(methods=["GET"], allow_guest=False)
 def get_library_stats():
@@ -69,7 +70,9 @@ def book_info(article_name=None):
     data = {
         "article_name": book.article_name,
         "author": book.author,
+        "publisher": book.publisher,
         "description": book.description,
+        "rating": book.rating,
         "isbn": book.isbn,
         "status": book.status,
         "image": book.image
@@ -198,6 +201,10 @@ def profile():
 
     return data
 
+"""
+Endpoints for reset and forgot password
+"""
+
 @frappe.whitelist(methods=["PATCH"], allow_guest=True)
 def change_password(old_password, new_password):
     user_email = frappe.session.user
@@ -214,6 +221,7 @@ def change_password(old_password, new_password):
 
     return {"Success": True, "message": "Password updated successfully!"}
 
+# cache
 @frappe.whitelist(allow_guest=True)
 def forgot_password(email=None):
     if not email:
@@ -307,6 +315,149 @@ def verify_reset_token(token):
 
     return {"success": True}
 
+"""
+Endpoints for notification
+"""
+@frappe.whitelist(allow_guest=False)
+def get_notifications():
+    user_email = frappe.session.user
+    member_id = frappe.get_value("Library Member", {"email_address": user_email})
+
+    if not member_id:
+        return []
+
+    notifications = frappe.get_all("Library Notification", filters={"library_member": member_id}, fields=["name", "title", "message", "is_read"])
+    return notifications
+
+@frappe.whitelist(allow_guest=False)
+def mark_as_read(name):
+    if not frappe.db.exists("Library Notification", name):
+        return {"ok": False, "message": "Notification not found"}
+    
+    frappe.db.set_value("Library Notification", name, "is_read", True)
+    frappe.db.commit()
+    return {"ok": True, "message": "Marked as read"}
+
+@frappe.whitelist(allow_guest=False)
+def delete_all_read():
+    user_email = frappe.session.user
+    member_id = frappe.get_value("Library Member", {"email_address": user_email})
+
+    if not member_id:
+        return {"success": False, "message": "User not found!"}
+
+    try:
+        frappe.db.delete("Library Notification", {
+            "library_member": member_id,
+            "is_read": 1
+        })
+
+        frappe.db.commit()
+
+        return {"success": True, "message": "Notifications deleted successfully."}
+    except Exception as e:
+        frappe.log_error(message=str(e), title="Delete Notifications Error")
+        return {"success": False, "message": "Failed to delete notifications!"}
+
+
+
+"""
+Endpoints for contact us
+"""
+@frappe.whitelist(allow_guest=False)
+def send_message(first_name=None, last_name=None, email_address=None, message=None):
+    
+    if not first_name or not last_name or not email_address or not message:
+        return {"success": False, "message": "All fields are required!"}
+
+    try:
+        frappe.get_doc({
+            "doctype": "Contact Message",
+            "email_address": email_address,
+            "first_name": first_name,
+            "last_name": last_name,
+            "message": message,
+            "responded": False
+        }).insert()
+        frappe.db.commit()
+    except Exception as e:
+        return {"success": False, "message": f"Failed to send message. {e}"}
+
+    return {"success": True, "message": "Message sent successfully!"}
+
+
+"""
+Endpoints for rating book
+"""
+@frappe.whitelist(allow_guest=False)
+def write_review(book=None, rating=None, review=None):
+    try:
+        rating = int(rating)
+    except ValueError:
+        return {"success": False, "message": "Rating must be an integer."}
+    
+    if not book or not rating:
+        return {"success": False, "message": "Book name or rating field is missing!"}
+    
+    if rating < 1 or rating > 5:
+        return {"success": False, "message": "Rating must be between 1 and 5."}
+    
+    user_email = frappe.session.user
+    member_id = frappe.get_value("Library Member", {"email_address": user_email})
+    
+    try:
+        article_rating = frappe.get_doc({
+            "doctype": "Article Rating",
+            "article": book,
+            "library_member": member_id,
+            "rating": rating,
+            "review": review
+        })
+        article_rating.insert()
+    except Exception as e:
+        frappe.throw(f"Failed to create review: {str(e)}")
+        frappe.log_error("failed", frappe.get_traceback())
+        return {"success": False, "message": "Failed to create review"}
+
+    return {"success": True, "message": "Write review successfully."}
+
+@frappe.whitelist(allow_guest=False)
+def delete_review():
+    user_email = frappe.session.user
+    member_id = frappe.get_value("Library Member", {"email_address": user_email})
+    review = frappe.get_value("Article Rating", {"library_member": member_id})
+
+    try:
+        frappe.delete_doc("Article Rating", review)
+    except Exception as e:
+        return {"success": False, "message": f"Failed to delete review. {str(e)}"}
+    
+    frappe.db.commit()
+    return {"success": True, "message": "Review deleted successfully."}
+
+@frappe.whitelist(allow_guest=False)
+def get_reviews(book=None, count=3):
+    if not book:
+        return {"success": False, "message": "Book field is missing!"}
+    
+    count = int(count)
+
+    reviews = frappe.db.get_all(
+        "Article Rating",
+        filters={"article": book},
+        fields=["library_member", "rating", "review"],
+        limit_start=0,
+        limit_page_length=count,
+        order_by="creation desc"
+    )
+
+    return reviews
+    
+    
+
+"""
+Endpoints for Membership payment
+"""
 @frappe.whitelist(methods=['POST'], allow_guest=False)
 def create_checkout_session():
     site_config = frappe.get_site_config()

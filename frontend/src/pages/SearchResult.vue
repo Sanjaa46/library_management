@@ -203,10 +203,10 @@ onMounted(async () => {
     currentPage.value = parseInt(route.query.page) || 1;
 
     watch(() => route.query, (newQuery) => {
-       searchQuery.value = newQuery.q || newQuery.query;
-       currentPage.value = parseInt(newQuery.page) || 1;
-       fetchBooks();
-   }, { deep: true });
+        searchQuery.value = newQuery.q || newQuery.query;
+        currentPage.value = parseInt(newQuery.page) || 1;
+        fetchBooks();
+    }, { deep: true });
     
     await fetchBooks();
 });
