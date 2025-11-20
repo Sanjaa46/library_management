@@ -257,3 +257,8 @@ scheduler_events = {
     ]
 }
 website_route_rules = [{'from_route': '/frontend/<path:app_path>', 'to_route': 'frontend'},]
+
+override_whitelisted_methods = {
+    "google_oauth_login": "your_app.api.oauth.google_oauth_login",
+    "google_oauth_callback": "your_app.api.oauth.google_oauth_callback",
+}

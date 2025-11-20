@@ -1,8 +1,13 @@
 import jwt
-import frappe, hashlib, secrets
+import frappe, hashlib, secrets, requests
 from datetime import datetime, timedelta
+from urllib.parse import urlencode
 
 CONF = frappe.get_conf()
+CLIENT_ID = CONF.get("google_client_id")
+CLIENT_SECRET = CONF.get("google_client_secret")
+AUTH_URI = CONF.get("google_auth_uri", "https://accounts.google.com/o/oauth2/auth")
+TOKEN_URI = CONF.get("googel_token_uri", "https://oauth2.googleapis.com/token")
 SECRET = CONF.get("jwt_secret")
 ALGO = CONF.get("jwt_algorithm", "HS256")
 ACCESS_EXPIRES = CONF.get("access_token_expires_seconds", 900)
@@ -186,13 +191,108 @@ def require_auth(fn):
 
     return wrapper
 
+# Google Oauth2 login
+@frappe.whitelist(allow_guest=True)
+def google_oauth_login():
+    params = {
+        "client_id": CLIENT_ID,
+        "redirect_uri": "http://localhost:8080/api/method/library_management.auth.google_oauth_callback/",
+        "response_type": "code",
+        "scope": "openid email profile",
+        "access_type": "offline",
+        "prompt": "consent"
+    }
+    url = f"{AUTH_URI}?{urlencode(params)}"
+    frappe.local.response["type"] = "redirect"
+    frappe.local.response["location"] = url
 
 
 @frappe.whitelist(allow_guest=True)
-@require_auth
-def secret_data(**kwargs):
-    frappe.log_error(f"Authenticated user: {frappe.local.user}")
-    return {
-        "user": frappe.session.user,
-        "msg": "This is top secret data only for authenticated users!"
-    }
+def google_oauth_callback(code=None):
+    try:
+        # Validate code parameter
+        if not code:
+            frappe.throw("Authorization code not provided")
+        
+        # Exchange code for tokens
+        token_res = requests.post(
+            TOKEN_URI,
+            data={
+                "client_id": CLIENT_ID,
+                "client_secret": CLIENT_SECRET,
+                "code": code,
+                "grant_type": "authorization_code",
+                "redirect_uri": "http://localhost:8080/api/method/library_management.auth.google_oauth_callback/"
+            }
+        )
+        
+        token_res.raise_for_status()  # Raise error for bad status codes
+        token_data = token_res.json()
+        
+        access_token = token_data.get("access_token")
+        if not access_token:
+            frappe.throw("Failed to get access token from Google")
+        
+        # Get user info
+        user_res = requests.get(
+            "https://www.googleapis.com/oauth2/v2/userinfo",
+            headers={"Authorization": f"Bearer {access_token}"}
+        )
+        
+        user_res.raise_for_status()
+        user_data = user_res.json()
+        
+        email = user_data.get("email")
+        full_name = user_data.get("name", "")
+        google_id = user_data.get("id", "")
+        
+        if not email:
+            frappe.throw("Email not provided by Google")
+        
+        # Check if user exists
+        user = frappe.db.get_value("User", {"email": email})
+        
+        if not user:
+            # Create new user
+            first_name, last_name = (full_name.split(" ", 1) + [""])[:2]
+            user_doc = frappe.get_doc({
+                "doctype": "User",
+                "email": email,
+                "first_name": first_name,
+                "last_name": last_name,
+                "enabled": 1,
+                "role_profile_name": "Library Member",
+                "google_oauth_id": google_id,
+                "send_welcome_email": 0  # Don't send welcome email
+            })
+            user_doc.flags.ignore_password_policy = True
+            user_doc.insert(ignore_permissions=True)
+            
+            library_member = frappe.get_doc({
+                "doctype": "Library Member",
+                "first_name": first_name,
+                "last_name": last_name,
+                "email_address": email
+            })
+            library_member.insert(ignore_permissions=True)
+            user = email
+        
+        # Login the user
+        frappe.local.login_manager.login_as(user)
+        frappe.local.login_manager.post_login()
+        
+        frappe.db.commit()
+        
+        # Redirect to frontend
+        frappe.local.response["type"] = "redirect"
+        frappe.local.response["location"] = "/frontend"
+        
+    except requests.exceptions.RequestException as e:
+        frappe.log_error(f"Google OAuth Error: {str(e)}")
+        frappe.local.response["type"] = "redirect"
+        frappe.local.response["location"] = "/frontend?error=oauth_failed"
+        
+    except Exception as e:
+        frappe.log_error(f"OAuth Callback Error: {str(e)}")
+        frappe.local.response["type"] = "redirect"
+        frappe.local.response["location"] = "/frontend?error=login_failed"

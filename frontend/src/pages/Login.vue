@@ -25,6 +25,10 @@
           <Button :locading="session.login.loading" variant="solid" class="bg-[#007C91] text-white py-2 rounded hover:bg-[#006273] transition">
             Login
           </Button>
+          <Button variant="solid" @click="loginWithGoogle">
+            <img src="../assets/images/google-logo.png" alt="Google Logo" class="inline w-5 h-5 mr-2 align-middle"/>
+            Sign in with Google
+          </Button>
         </form>
         <div class="text-center mt-6 text-sm">
           Don't have an account?
@@ -50,6 +54,7 @@
 
 <script setup>
 import { session } from '../data/session'
+import { onMounted } from 'vue'
 
 // Session-based Authentication
 function submit(e) {
@@ -67,5 +72,16 @@ import { ref } from 'vue';
 const email = ref('')
 const password = ref('')
 
+// Google One Tap Integration
+
+function loginWithGoogle() {
+  window.location.href =
+    "http://localhost:8080/api/method/library_management.auth.google_oauth_login";
+}
+
+// onMounted(async () => {
+//   // Reload session to check if user is logged in after OAuth redirect
+//   await session.reload()
+// })
 
 </script>

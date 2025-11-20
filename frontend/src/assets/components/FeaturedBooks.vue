@@ -23,6 +23,7 @@ import Article from '../components/Article.vue';
 import { Carousel, Slide, Navigation } from 'vue3-carousel';
 import { ref, onMounted } from 'vue';
 
+// import createResource from 'frappe-ui';
 const carouselConfig = {
   itemsToShow: 4.5,
   snapAlign: 'start',
