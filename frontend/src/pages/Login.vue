@@ -29,6 +29,10 @@
             <img src="../assets/images/google-logo.png" alt="Google Logo" class="inline w-5 h-5 mr-2 align-middle"/>
             Sign in with Google
           </Button>
+          <Button variant="solid" @click="loginWithSso">
+            <img src="../assets/images/login.png" alt="Google Logo" class="inline w-5 h-5 mr-2 align-middle"/>
+            Sign in with SSO
+          </Button>
         </form>
         <div class="text-center mt-6 text-sm">
           Don't have an account?
@@ -77,6 +81,15 @@ const password = ref('')
 function loginWithGoogle() {
   window.location.href =
     "http://localhost:8080/api/method/library_management.auth.google_oauth_login";
+}
+
+function loginWithSso() {
+  const client_id = "vue_app"
+  const redirect_uri = "http://localhost:8080/frontend/callback"
+  const response_type = "code"
+  const scope = "openid email profile"
+  window.location.href =
+    "http://localhost:8001/authorize?client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&response_type=" + response_type + "&scope=" + scope;
 }
 
 // onMounted(async () => {

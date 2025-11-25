@@ -48,6 +48,11 @@ const routes = [
 		path: "/frontend/forgot-password",
 		component: () => import("@/pages/ForgotPassword.vue"),
 	},
+	{
+		name: "auth-callback",
+		path: "/callback",
+		component: () => import("@/pages/AuthCallback.vue")
+	}
 ]
 
 const router = createRouter({
@@ -68,12 +73,12 @@ router.beforeEach(async (to, from, next) => {
 	
 	
 	// If user is not logged in and tries to visit a protected page
-	if (!isLoggedIn && !["Login", "Signup", "ForgotPassword", "ResetPassword"].includes(to.name)) {
+	if (!isLoggedIn && !["Login", "Signup", "ForgotPassword", "ResetPassword", "auth-callback"].includes(to.name)) {
 		return next({ name: "Login" });
 	}
 
 	// If user is logged in and tries to visit Login or Signup
-	if (isLoggedIn && ["Login", "Signup", "ForgotPassword", "ResetPassword"].includes(to.name)) {
+	if (isLoggedIn && ["Login", "Signup", "ForgotPassword", "ResetPassword", "auth-callback"].includes(to.name)) {
 		return next({ name: "Home" });
 	}
 
