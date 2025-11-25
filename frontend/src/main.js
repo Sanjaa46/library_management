@@ -3,13 +3,14 @@ import { createApp } from "vue"
 import rate from 'vue-rate'
 import 'vue-rate/dist/vue-rate.css'
 
-import { io } from 'socket.io-client'
-
 import App from "./App.vue"
 import router from "./router"
 import { initSocket } from "./socket"
-import { FrappeUI } from "frappe-ui"
+import axios from 'axios'
+import { useAuthStore } from "./data/auth"
+import { createPinia } from "pinia"
 
+const pinia = createPinia()
 import {
 	Alert,
 	Badge,
@@ -39,11 +40,22 @@ const globalComponents = {
 }
 const app = createApp(App).use(rate)
 
+
 setConfig("resourceFetcher", frappeRequest)
 
 app.use(router)
 app.use(resourcesPlugin)
 app.use(pageMetaPlugin)
+app.use(pinia)
+
+axios.interceptors.request.use((config) => {
+	const auth = useAuthStore()
+	if (auth.accessToken) {
+		config.headers.Authorization = `Bearer ${auth.accessToken}`;
+		console.log(auth.accessToken);
+	}
+	return config;
+})
 
 const socket = initSocket()
 // app.config.globalProperties.$socket = socket

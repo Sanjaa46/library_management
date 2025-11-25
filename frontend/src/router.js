@@ -50,7 +50,7 @@ const routes = [
 	},
 	{
 		name: "auth-callback",
-		path: "/callback",
+		path: "/frontend/callback",
 		component: () => import("@/pages/AuthCallback.vue")
 	}
 ]
