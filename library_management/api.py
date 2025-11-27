@@ -1,11 +1,15 @@
 import stripe
 import frappe
 from frappe import _
-from .auth import require_auth
+from .auth import validate_bearer_token
 from frappe import publish_realtime
 
 @frappe.whitelist(methods=["GET"], allow_guest=False)
 def get_library_stats():
+    token_data = getattr(frappe.local, 'oauth_token_data', {})
+    
+    print(frappe.session.user)
+    
     total_books = frappe.db.count("Article")
     total_members = frappe.db.count("Library Member")
     total_issued = frappe.db.count("Library Transaction", {"type": "Issue"})
@@ -13,7 +17,8 @@ def get_library_stats():
     return {
         "books": total_books,
         "members": total_members,
-        "issued": total_issued
+        "issued": total_issued,
+        "user": frappe.session.user
     }
 
 
@@ -505,8 +510,6 @@ def create_checkout_session():
         frappe.db.rollback()
         frappe.log_error(f"Error creating membership: {str(e)}")
         frappe.throw("Failed to create membership. Please try again.")
-
-    print("customer id: ", member.stripe_customer_id)
 
     session = stripe.checkout.Session.create(
         customer=member.stripe_customer_id,

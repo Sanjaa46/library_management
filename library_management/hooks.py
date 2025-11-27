@@ -262,3 +262,7 @@ override_whitelisted_methods = {
     "google_oauth_login": "your_app.api.oauth.google_oauth_login",
     "google_oauth_callback": "your_app.api.oauth.google_oauth_callback",
 }
+
+before_request = [
+    "library_management.auth.validate_bearer_token"
+]

@@ -296,3 +296,72 @@ def google_oauth_callback(code=None):
         frappe.log_error(f"OAuth Callback Error: {str(e)}")
         frappe.local.response["type"] = "redirect"
         frappe.local.response["location"] = "/frontend?error=login_failed"
+
+
+"""
+Auth server authorization
+"""
+
+def validate_bearer_token():
+    """
+    Middleware to validate Bearer token for all API requests.
+    Skips validation for whitlisted endpoints and guest-allowed endpoints.
+    """
+    
+    # Skip for non-API requests or login endpoints
+    if not frappe.request.path.startswith('/api/'):
+        return
+    
+    # Skip for guest-allowed endpoints
+    if frappe.request.path in ['/api/method/login', '/api/method/frappe.auth.get_logged_user']:
+        return
+    
+    auth = frappe.get_request_header("Authorization")
+    
+    if not auth or not auth.startswith("Bearer "):
+        frappe.throw("Missing or invalid Authorization header", frappe.AuthenticationError)
+    
+    token = auth.split(" ")[1]
+    
+    # validate token with SSO server
+    try:
+        # You need to authenticate with your auth server
+        # Use client credentials from your Frappe site config
+        client_id = frappe.conf.get("oauth_client_id")
+        client_secret = frappe.conf.get("oauth_client_secret")
+        
+        if not client_id or not client_secret:
+            frappe.throw("OAuth client credentials not configured", frappe.AuthenticationError)
+        
+        resp = requests.post(
+            "http://localhost:8001/introspect",
+            data={"token": token},
+            auth=(client_id, client_secret),  # HTTP Basic auth
+            timeout=5
+        )
+        
+        if resp.status_code == 401:
+            frappe.throw("Invalid client credentials", frappe.AuthenticationError)
+        
+        if resp.status_code != 200:
+            frappe.throw(f"Auth server error: {resp.status_code}", frappe.AuthenticationError)
+        
+        data = resp.json()
+        
+        if not data.get("active"):
+            frappe.throw("Invalid or expired token", frappe.AuthenticationError)
+        
+        # Set user context based on token data
+        username = data.get("username")
+        if username:
+            frappe.set_user(username)
+        else:
+            frappe.throw("Token does not contain username", frappe.AuthenticationError)
+        
+        # Store token data in request context for later use
+        frappe.local.oauth_token_data = data
+        
+    except requests.RequestException as e:
+        frappe.throw(f"Failed to connect to auth server: {str(e)}", frappe.AuthenticationError)
+    
+    

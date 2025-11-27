@@ -87,9 +87,15 @@ function loginWithSso() {
   const client_id = "vue_app"
   const redirect_uri = "http://localhost:8080/frontend/callback"
   const response_type = "code"
-  const scope = "openid email profile"
-  window.location.href =
-    "http://localhost:8001/authorize?client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&response_type=" + response_type + "&scope=" + scope;
+  // const scope = "openid email profile"
+  
+  
+  const authUrl = new URL('http://localhost:8001/authorize')
+  authUrl.searchParams.append('client_id', client_id)
+  authUrl.searchParams.append('redirect_uri', redirect_uri)
+  authUrl.searchParams.append('response_type', response_type)
+  
+  window.location.href = authUrl.toString()
 }
 
 // onMounted(async () => {
